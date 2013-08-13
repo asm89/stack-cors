@@ -15,6 +15,14 @@ class CorsService
         $this->options = $options;
     }
 
+    public function isActualRequestAllowed(Request $request)
+    {
+        $origin = $request->headers->get('Origin');
+
+        return in_array($origin, $this->options['allowedOrigins']);
+    }
+
+
     public function isCorsRequest(Request $request)
     {
         return $request->headers->has('Origin');
@@ -111,10 +119,6 @@ class CorsService
 
     private function createBadRequestResponse($code, $reason = '')
     {
-        $response = new Response($reason);
-
-        $response->setStatusCode($code);
-
-        return $response;
+        return new Response($reason, $code);
     }
 }
