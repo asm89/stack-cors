@@ -1,7 +1,10 @@
 # Stack/Cors
 
 Library and middleware enabling cross-origin resource sharing for your
-http-{foundation,kernel} using application.
+http-{foundation,kernel} using application. It attempts to implement the
+[W3C Candidate Recommendation] for cross-origin resource sharing.
+
+[W3C Candidate Recommendation]: http://www.w3.org/TR/cors/
 
 # Installation
 
