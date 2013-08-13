@@ -22,9 +22,7 @@ class Cors implements HttpKernelInterface
     public function __construct(HttpKernelInterface $app, array $options = array())
     {
         $this->app  = $app;
-        $options    = array_merge($this->defaultOptions, $options);
-
-        $this->cors = new CorsService($options);
+        $this->cors = new CorsService(array_merge($this->defaultOptions, $options));
 
     }
 
