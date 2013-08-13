@@ -6,11 +6,11 @@ http-{foundation,kernel} using application. It attempts to implement the
 
 [W3C Candidate Recommendation]: http://www.w3.org/TR/cors/
 
-# Installation
+## Installation
 
 Require `asm89/stack-cors` using composer.
 
-# Usage
+## Usage
 
 ```php
 <?php
