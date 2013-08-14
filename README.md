@@ -34,7 +34,7 @@ $app = new Cors($app, array(
 
 Or use the library:
 
-```
+```php
 <?php
 
 use Asm89\Stack\CorsService;
