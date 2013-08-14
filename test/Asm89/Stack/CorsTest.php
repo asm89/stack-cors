@@ -321,14 +321,10 @@ class MockApp implements HttpKernelInterface
 
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
-        $response = new MockResponse();
+        $response = new Response();
 
         $response->headers->add($this->responseHeaders);
 
         return $response;
     }
-}
-
-class MockResponse extends Response
-{
 }
