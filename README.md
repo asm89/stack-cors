@@ -23,8 +23,11 @@ Stack middleware:
 use Asm89\Stack\Cors;
 
 $app = new Cors($app, array(
+    // you can use array('*') to allow any headers
     'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
+    // you can use array('*') to allow any methods
     'allowedMethods'      => array('DELETE', 'GET', 'POST', 'PUT'),
+    // you can use array('*') to allow requests from any origin
     'allowedOrigins'      => array('localhost'),
     'exposedHeaders'      => false,
     'maxAge'              => false,

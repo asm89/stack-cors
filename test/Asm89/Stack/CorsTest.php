@@ -27,7 +27,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
      */
     public function it_returns_403_on_valid_actual_request_with_origin_not_allowed()
     {
-        $app     = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost')));
+        $app      = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost')));
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
@@ -47,6 +47,37 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_allow_origin_header_on_allow_all_origin_request()
+    {
+        $app      = $this->createStackedApp(array('allowedOrigins' => array('*')));
+        $request  = new Request();
+        $request->headers->set('Origin', 'http://localhost');
+
+        $response = $app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_allow_headers_header_on_allow_all_headers_request()
+    {
+        $app     = $this->createStackedApp(array('allowedHeaders' => array('*')));
+        $request = $this->createValidPreflightRequest();
+        $request->headers->set('Access-Control-Request-Headers', 'Foo, BAR');
+
+        $response = $app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('FOO, BAR', $response->headers->get('Access-Control-Allow-Headers'));
     }
 
     /**
@@ -178,6 +209,23 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_does_not_modify_request_with_origin_not_allowed()
+    {
+        $passedOptions = array(
+          'allowedOrigins' => array('notlocalhost'),
+        );
+
+        $service  = new CorsService($passedOptions);
+        $request  = $this->createValidActualRequest();
+        $response = new Response();
+        $service->addActualRequestHeaders($response, $request);
+
+        $this->assertEquals($response, new Response());
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_405_on_valid_preflight_request_with_method_not_allowed()
     {
         $app     = $this->createStackedApp(array('allowedMethods' => array('put')));
@@ -199,7 +247,23 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $response = $app->handle($request);
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
-        $this->assertEquals('get, put', $response->headers->get('Access-Control-Allow-Methods'));
+        // it will uppercase the methods
+        $this->assertEquals('GET, PUT', $response->headers->get('Access-Control-Allow-Methods'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_valid_preflight_request_with_allow_methods_all()
+    {
+        $app     = $this->createStackedApp(array('allowedMethods' => array('*')));
+        $request = $this->createValidPreflightRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
+        // it will return the Access-Control-Request-Method pass in the request
+        $this->assertEquals('GET', $response->headers->get('Access-Control-Allow-Methods'));
     }
 
     /**
@@ -231,7 +295,8 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Headers'));
-        $this->assertEquals($requestHeaders, $response->headers->get('Access-Control-Allow-Headers'));
+        // the response will have the "allowedHeaders" value passed to Cors rather than the request one
+        $this->assertEquals('x-allowed-header, x-other-allowed-header', $response->headers->get('Access-Control-Allow-Headers'));
     }
 
     /**
