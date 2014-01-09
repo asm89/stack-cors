@@ -8,7 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Cors implements HttpKernelInterface
 {
+    /**
+     * @var \Symfony\Component\HttpKernel\HttpKernelInterface
+     */
     private $app;
+
+    /**
+     * @var \Asm89\Stack\CorsService
+     */
+    private $cors;
 
     private $defaultOptions = array(
         'allowedHeaders'      => array(),
@@ -42,6 +50,6 @@ class Cors implements HttpKernelInterface
 
         $response = $this->app->handle($request, $type, $catch);
 
-        return $this->cors->addActualRequestHeaders($response, $request->headers->get('Origin'));
+        return $this->cors->addActualRequestHeaders($response, $request);
     }
 }
