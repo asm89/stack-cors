@@ -27,15 +27,24 @@ class Cors implements HttpKernelInterface
         'supportsCredentials' => false,
     );
 
-    public function __construct(HttpKernelInterface $app, array $options = array())
+    public function __construct(HttpKernelInterface $app = null, array $options = array())
     {
         $this->app  = $app;
         $this->cors = new CorsService(array_merge($this->defaultOptions, $options));
+    }
 
+    public function setApp(HttpKernelInterface $app)
+    {
+        $this->app = $app;
+        return $this;
     }
 
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
+        if ( ! $this->app) {
+            throw new \RuntimeException("No app found on Cors middleware");
+        }
+
         if ( ! $this->cors->isCorsRequest($request)) {
             return $this->app->handle($request, $type, $catch);
         }
