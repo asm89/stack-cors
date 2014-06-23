@@ -340,6 +340,27 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(42, $response->headers->get('Access-Control-Max-Age'));
     }
 
+    /**
+     * @test
+     */
+    public function it_does_not_require_app_on_construction()
+    {
+        $cors = $this->createService();
+        $app = new MockApp(array());
+        $cors->setApp($app);
+        $this->assertTrue($cors->handle(new Request())->isSuccessful());
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     */
+    public function it_throws_exception_on_no_app()
+    {
+        $cors = $this->createService();
+        $cors->handle(new Request());
+    }
+
     private function createValidActualRequest()
     {
         $request  = new Request();
@@ -360,6 +381,11 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
     private function createStackedApp(array $options = array(), array $responseHeaders = array())
     {
+        return $this->createService(new MockApp($responseHeaders), $options);
+    }
+
+    private function createService(HttpKernelInterface $app = null, array $options = array())
+    {
         $passedOptions = array_merge(array(
                 'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
                 'allowedMethods'      => array('delete', 'get', 'post', 'put'),
@@ -371,7 +397,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
             $options
         );
 
-        return new Cors(new MockApp($responseHeaders), $passedOptions);
+        return new Cors($app, $passedOptions);
     }
 }
 
