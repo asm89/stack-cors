@@ -130,8 +130,8 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $response = $app->handle($request);
 
-        $this->assertTrue($response->headers->has('Access-Control-Exposed-Headers'));
-        $this->assertEquals('x-exposed-header, x-another-exposed-header', $response->headers->get('Access-Control-Exposed-Headers'));
+        $this->assertTrue($response->headers->has('Access-Control-Expose-Headers'));
+        $this->assertEquals('x-exposed-header, x-another-exposed-header', $response->headers->get('Access-Control-Expose-Headers'));
     }
 
     /**
