@@ -100,6 +100,8 @@ class CorsService
     private function buildPreflightCheckResponse(Request $request)
     {
         $response = new Response();
+        
+        $response->setContent('No Content');
 
         if ($this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
