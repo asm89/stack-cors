@@ -30,6 +30,13 @@ class CorsService
         // normalize array('*') to true
         if (in_array('*', $options['allowedOrigins'])) {
           $options['allowedOrigins'] = true;
+        } else {
+          // Compile allowed origins into a Regular Expression
+          $origins = array();
+          foreach ($options['allowedOrigins'] as $origin) {
+            $origins[] = str_replace('\\*', '(.+)', preg_quote($origin));
+          }
+          $options['allowedOrigins'] = '/^('.implode('|', $origins).')$/';
         }
         if (in_array('*', $options['allowedHeaders'])) {
           $options['allowedHeaders'] = true;
@@ -162,7 +169,7 @@ class CorsService
         }
         $origin = $request->headers->get('Origin');
 
-        return in_array($origin, $this->options['allowedOrigins']);
+        return preg_match($this->options['allowedOrigins'], $origin);
     }
 
     private function checkMethod(Request $request) {
