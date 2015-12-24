@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Asm89\\Stack": "src/Asm89/Stack/"
+            "Asm89\\Stack\\": "src/Asm89/Stack/"
         }
     }
 }
