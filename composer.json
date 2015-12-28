@@ -18,5 +18,10 @@
     },
     "autoload": {
         "psr-0": { "Asm89\\Stack": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
     }
 }
