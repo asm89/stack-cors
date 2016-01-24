@@ -59,7 +59,7 @@ class CorsService
     public function isPreflightRequest(Request $request)
     {
         return $this->isCorsRequest($request)
-            &&$request->getMethod() === 'OPTIONS'
+            && $request->getMethod() === 'OPTIONS'
             && $request->headers->has('Access-Control-Request-Method');
     }
 
