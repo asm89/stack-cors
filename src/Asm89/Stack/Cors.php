@@ -4,7 +4,6 @@ namespace Asm89\Stack;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class Cors implements HttpKernelInterface
 {
@@ -29,26 +28,25 @@ class Cors implements HttpKernelInterface
 
     public function __construct(HttpKernelInterface $app, array $options = array())
     {
-        $this->app  = $app;
+        $this->app = $app;
         $this->cors = new CorsService(array_merge($this->defaultOptions, $options));
-
     }
 
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
-        if ( ! $this->cors->isCorsRequest($request)) {
-            return $this->app->handle($request, $type, $catch);
+        $response = $this->app->handle($request, $type, $catch);
+
+        if (!$this->cors->isCorsRequest($request)) {
+            return $response;
         }
 
         if ($this->cors->isPreflightRequest($request)) {
-            return $this->cors->handlePreflightRequest($request);
+            return $this->cors->handlePreflightRequest($request, $response);
         }
 
-        if ( ! $this->cors->isActualRequestAllowed($request)) {
-            return new Response('Not allowed.', 403);
+        if (!$this->cors->isActualRequestAllowed($request)) {
+            return $response->setContent('Not allowed.')->setStatusCode(403);
         }
-
-        $response = $this->app->handle($request, $type, $catch);
 
         return $this->cors->addActualRequestHeaders($response, $request);
     }
