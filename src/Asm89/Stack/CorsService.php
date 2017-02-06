@@ -69,7 +69,11 @@ class CorsService
             return $response;
         }
 
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        if ($this->options['allowedOrigins'] === true) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        } else {
+            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        }
 
         if ( ! $response->headers->has('Vary')) {
             $response->headers->set('Vary', 'Origin');
