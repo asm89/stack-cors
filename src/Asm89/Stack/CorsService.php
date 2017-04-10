@@ -53,7 +53,7 @@ class CorsService
 
     public function isCorsRequest(Request $request)
     {
-        return $request->headers->has('Origin');
+        return $request->headers->has('Origin') && ! $this->isSameHost($request);
     }
 
     public function isPreflightRequest(Request $request)
@@ -153,6 +153,11 @@ class CorsService
     private function createBadRequestResponse($code, $reason = '')
     {
         return new Response($reason, $code);
+    }
+
+    private function isSameHost(Request $request)
+    {
+        return $request->headers->get('Origin') === $request->getSchemeAndHttpHost();
     }
 
     private function checkOrigin(Request $request) {
