@@ -137,7 +137,7 @@ class CorsService
         // if allowedHeaders has been set to true ('*' allow all flag) just skip this check
         if ($this->options['allowedHeaders'] !== true && $request->headers->has('Access-Control-Request-Headers')) {
             $headers        = strtolower($request->headers->get('Access-Control-Request-Headers'));
-            $requestHeaders = explode(',', $headers);
+            $requestHeaders = array_filter(explode(',', $headers));
 
             foreach ($requestHeaders as $header) {
                 if (!in_array(trim($header), $this->options['allowedHeaders'])) {
