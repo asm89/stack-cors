@@ -8,6 +8,8 @@ php:
   - 7.0
   - hhvm
 
-before_script: composer install --dev
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer install --prefer-source --no-interaction --dev
 
-script: phpunit
+script: vendor/bin/phpunit --verbose

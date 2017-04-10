@@ -1,7 +1,7 @@
 <?php
 
 if (file_exists($file = __DIR__.'/../vendor/autoload.php')) {
-    $loader = require_once $file;
+    $loader = require $file;
     $loader->add('Asm89\Stack', __DIR__);
     $loader->add('Asm89\Stack', __DIR__ . '/../src');
 } else {
