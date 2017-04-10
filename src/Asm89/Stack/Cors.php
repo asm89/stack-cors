@@ -31,12 +31,11 @@ class Cors implements HttpKernelInterface
     {
         $this->app  = $app;
         $this->cors = new CorsService(array_merge($this->defaultOptions, $options));
-
     }
 
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
-        if ( ! $this->cors->isCorsRequest($request)) {
+        if (!$this->cors->isCorsRequest($request)) {
             return $this->app->handle($request, $type, $catch);
         }
 
@@ -44,7 +43,7 @@ class Cors implements HttpKernelInterface
             return $this->cors->handlePreflightRequest($request);
         }
 
-        if ( ! $this->cors->isActualRequestAllowed($request)) {
+        if (!$this->cors->isActualRequestAllowed($request)) {
             return new Response('Not allowed.', 403);
         }
 
