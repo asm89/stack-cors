@@ -17,6 +17,8 @@
         "symfony/http-kernel": "~2.1|~3.0"
     },
     "autoload": {
-        "psr-0": { "Asm89\\Stack": "src/" }
+        "psr-4": {
+            "Asm89\\Stack\\": "src/Asm89/Stack/"
+        }
     }
 }
