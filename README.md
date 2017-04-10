@@ -14,27 +14,11 @@ Require `asm89/stack-cors` using composer.
 
 ## Usage
 
-Stack middleware:
+This package can be used as a library or as [stack middleware].
 
-```php
-<?php
+[stack middleware]: http://stackphp.com/
 
-use Asm89\Stack\Cors;
-
-$app = new Cors($app, array(
-    // you can use array('*') to allow any headers
-    'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
-    // you can use array('*') to allow any methods
-    'allowedMethods'      => array('DELETE', 'GET', 'POST', 'PUT'),
-    // you can use array('*') to allow requests from any origin
-    'allowedOrigins'      => array('localhost'),
-    'exposedHeaders'      => false,
-    'maxAge'              => false,
-    'supportsCredentials' => false,
-));
-```
-
-Or use the library:
+### Example: using the library
 
 ```php
 <?php
@@ -55,4 +39,24 @@ $cors->handlePreflightRequest(Request $request);
 $cors->isActualRequestAllowed(Request $request);
 $cors->isCorsRequest(Request $request);
 $cors->isPreflightRequest(Request $request);
+```
+
+## Example: using the stack middleware
+
+```php
+<?php
+
+use Asm89\Stack\Cors;
+
+$app = new Cors($app, array(
+    // you can use array('*') to allow any headers
+    'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
+    // you can use array('*') to allow any methods
+    'allowedMethods'      => array('DELETE', 'GET', 'POST', 'PUT'),
+    // you can use array('*') to allow requests from any origin
+    'allowedOrigins'      => array('localhost'),
+    'exposedHeaders'      => false,
+    'maxAge'              => false,
+    'supportsCredentials' => false,
+));
 ```
