@@ -7,7 +7,6 @@ http-{foundation,kernel} using application. It attempts to implement the
 [W3C Candidate Recommendation]: http://www.w3.org/TR/cors/
 
 Master [![Build Status](https://secure.travis-ci.org/asm89/stack-cors.png?branch=master)](http://travis-ci.org/asm89/stack-cors)
-Develop [![Build Status](https://secure.travis-ci.org/asm89/stack-cors.png?branch=develop)](http://travis-ci.org/asm89/stack-cors)
 
 ## Installation
 
