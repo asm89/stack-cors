@@ -40,6 +40,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $unmodifiedResponse = new Response();
 
         $request  = new Request();
+        $request->server->set('SERVER_PORT', 80);
         $request->headers->set('Host', 'foo.com');
         $request->headers->set('Origin', 'http://foo.com');
         $response = $app->handle($request);
