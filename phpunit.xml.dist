@@ -12,7 +12,7 @@
 >
   <testsuites>
     <testsuite name="Stack Cors Test Suite">
-      <directory>./test/Asm89/</directory>
+      <directory>./test/</directory>
     </testsuite>
   </testsuites>
 
@@ -21,5 +21,4 @@
       <directory suffix=".php">./src/</directory>
     </whitelist>
   </filter>
-
 </phpunit>
