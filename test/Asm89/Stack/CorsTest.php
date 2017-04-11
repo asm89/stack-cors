@@ -27,6 +27,10 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $unmodifiedResponse = new Response();
 
         $response = $app->handle(new Request());
+        
+        //The two response are made at different times, ignore the date field.
+        $unmodifiedResponse->headers->date = '';
+        $response->headers->date = '';
 
         $this->assertEquals($unmodifiedResponse->headers, $response->headers);
     }
