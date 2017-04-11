@@ -36,16 +36,13 @@ class CorsService
         );
 
         // normalize array('*') to true
-        if (in_array('*', $options['allowedOrigins'])) {
+        if ($options['allowedOrigins'] === true || in_array('*', $options['allowedOrigins'])) {
             $options['allowedOrigins'] = true;
         }
-        if (in_array('*', $options['allowedHeaders'])) {
+        if ($options['allowedHeaders'] === true || in_array('*', $options['allowedHeaders'])) {
             $options['allowedHeaders'] = true;
-        } else {
-            $options['allowedHeaders'] = array_map('strtolower', $options['allowedHeaders']);
         }
-
-        if (in_array('*', $options['allowedMethods'])) {
+        if ($options['allowedMethods'] === true || in_array('*', $options['allowedMethods'])) {
             $options['allowedMethods'] = true;
         } else {
             $options['allowedMethods'] = array_map('strtoupper', $options['allowedMethods']);
