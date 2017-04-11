@@ -1,8 +1,6 @@
 language: php
 
 php:
-  - 5.3
-  - 5.4
   - 5.5
   - 5.6
   - 7.0
@@ -20,10 +18,12 @@ cache:
 
 matrix:
   include:
-    - php: 5.3
+    - php: 5.5.9
       env: 'COMPOSER_FLAGS="--prefer-stable --prefer-lowest"'
 
 before_script:
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+  - travis_retry composer update ${COMPOSER_FLAGS}
 
-script: vendor/bin/phpunit
+script:
+  - vendor/bin/phpcs --standard=psr2 src/
+  - vendor/bin/phpunit
