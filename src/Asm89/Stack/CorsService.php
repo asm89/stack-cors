@@ -174,9 +174,16 @@ class CorsService
             // allow all '*' flag
             return true;
         }
+
         $origin = $request->headers->get('Origin');
 
-        return in_array($origin, $this->options['allowedOrigins']);
+        foreach ($this->options['allowedOrigins'] as $allowedOrign) {
+            if (OriginMatcher::matches($allowedOrign, $origin)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function checkMethod(Request $request)
