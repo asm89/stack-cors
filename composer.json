@@ -20,10 +20,14 @@
         "phpunit/phpunit": "^5.0 || ^4.8.10"
     },
     "autoload": {
-        "psr-0": { "Asm89\\Stack": "src/" }
+        "psr-4": {
+            "Asm89\\Stack\\": "src/Asm89/Stack/"
+        }
     },
     "autoload-dev": {
-        "psr-0": { "Asm89\\Stack\\": "test/" }
+        "psr-4": {
+            "Asm89\\Stack\\": "test/Asm89/Stack/"
+        }
     },
     "extra": {
         "branch-alias": {
