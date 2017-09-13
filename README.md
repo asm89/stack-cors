@@ -26,12 +26,13 @@ This package can be used as a library or as [stack middleware].
 use Asm89\Stack\CorsService;
 
 $cors = new CorsService(array(
-    'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
-    'allowedMethods'      => array('DELETE', 'GET', 'POST', 'PUT'),
-    'allowedOrigins'      => array('localhost'),
-    'exposedHeaders'      => false,
-    'maxAge'              => false,
-    'supportsCredentials' => false,
+    'allowedHeaders'         => array('x-allowed-header', 'x-other-allowed-header'),
+    'allowedMethods'         => array('DELETE', 'GET', 'POST', 'PUT'),
+    'allowedOrigins'         => array('localhost'),
+    'allowedOriginsPatterns' => array('/localhost:\d/'),
+    'exposedHeaders'         => false,
+    'maxAge'                 => false,
+    'supportsCredentials'    => false,
 ));
 
 $cors->addActualRequestHeaders(Response $response, $origin);
@@ -55,6 +56,8 @@ $app = new Cors($app, array(
     'allowedMethods'      => array('DELETE', 'GET', 'POST', 'PUT'),
     // you can use array('*') to allow requests from any origin
     'allowedOrigins'      => array('localhost'),
+    // you can enter regexes that are matched to the origin request header
+    'allowedOriginsPatterns' => array('/localhost:\d/'),
     'exposedHeaders'      => false,
     'maxAge'              => false,
     'supportsCredentials' => false,
