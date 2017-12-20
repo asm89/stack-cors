@@ -209,6 +209,23 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_returns_access_control_headers_on_cors_request_with_pattern_origin()
+    {
+        $app = $this->createStackedApp(array(
+          'allowedOrigins' => array(),
+          'allowedOriginsPatterns' => array('/l(o|0)calh(o|0)st/')
+        ));
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
+        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_access_control_headers_on_valid_preflight_request()
     {
         $app     = $this->createStackedApp();
@@ -240,6 +257,24 @@ class CorsTest extends PHPUnit_Framework_TestCase
     {
         $passedOptions = array(
           'allowedOrigins' => array('notlocalhost'),
+        );
+
+        $service  = new CorsService($passedOptions);
+        $request  = $this->createValidActualRequest();
+        $response = new Response();
+        $service->addActualRequestHeaders($response, $request);
+
+        $this->assertEquals($response, new Response());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_modify_request_with_pattern_origin_not_allowed()
+    {
+        $passedOptions = array(
+            'allowedOrigins' => array(),
+            'allowedOriginsPatterns' => array('/l\dcalh\dst/')
         );
 
         $service  = new CorsService($passedOptions);
