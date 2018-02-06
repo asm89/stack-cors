@@ -78,7 +78,18 @@ class CorsService
             return $response;
         }
 
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        /*
+         * If 'allowedOrigins' is set to '*' and we don't need to support credentials, allow all origins.
+         *
+         * From MDN documentation (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin):
+         * "For requests without credentials, the server may specify "*" as a wildcard, thereby allowing any origin to access the resource."
+         *
+         */
+        if ($this->options['allowedOrigins'] && !$this->options['supportsCredentials']) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        } else {
+            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        }
 
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', 'Origin');
@@ -114,7 +125,18 @@ class CorsService
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
 
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        /*
+         * If 'allowedOrigins' is set to '*' and we don't need to support credentials, allow all origins.
+         *
+         * From MDN documentation (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin):
+         * "For requests without credentials, the server may specify "*" as a wildcard, thereby allowing any origin to access the resource."
+         *
+         */
+        if ($this->options['allowedOrigins'] && !$this->options['supportsCredentials']) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        } else {
+            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        }
 
         if ($this->options['maxAge']) {
             $response->headers->set('Access-Control-Max-Age', $this->options['maxAge']);
