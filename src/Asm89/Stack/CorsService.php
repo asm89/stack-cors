@@ -85,7 +85,7 @@ class CorsService
          * "For requests without credentials, the server may specify "*" as a wildcard, thereby allowing any origin to access the resource."
          *
          */
-        if ($this->options['allowedOrigins'] && !$this->options['supportsCredentials']) {
+        if ($this->options['allowedOrigins'] === true && !$this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Origin', '*');
         } else {
             $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
@@ -132,7 +132,7 @@ class CorsService
          * "For requests without credentials, the server may specify "*" as a wildcard, thereby allowing any origin to access the resource."
          *
          */
-        if ($this->options['allowedOrigins'] && !$this->options['supportsCredentials']) {
+        if ($this->options['allowedOrigins'] === true && !$this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Origin', '*');
         } else {
             $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));

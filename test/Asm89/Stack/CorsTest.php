@@ -79,9 +79,25 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_allow_origin_header_on_allow_all_origin_request()
+    public function it_returns_allow_origin_header_on_allow_all_origin_request_without_credentials()
     {
         $app      = $this->createStackedApp(array('allowedOrigins' => array('*')));
+        $request  = new Request();
+        $request->headers->set('Origin', 'http://localhost');
+
+        $response = $app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_allow_origin_header_on_allow_all_origin_request()
+    {
+        $app      = $this->createStackedApp(array('allowedOrigins' => array('*'), 'supportsCredentials' => true));
         $request  = new Request();
         $request->headers->set('Origin', 'http://localhost');
 
