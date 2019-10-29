@@ -35,6 +35,7 @@ class Cors implements HttpKernelInterface
         'exposedHeaders'         => false,
         'maxAge'                 => false,
         'supportsCredentials'    => false,
+        'alwaysSetVaryOrigin'    => false,
     );
 
     public function __construct(HttpKernelInterface $app, array $options = array())
@@ -46,19 +47,22 @@ class Cors implements HttpKernelInterface
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
         if (!$this->cors->isCorsRequest($request)) {
-            return $this->app->handle($request, $type, $catch);
+            $response = $this->app->handle($request, $type, $catch);
+        }
+        elseif ($this->cors->isPreflightRequest($request)) {
+            $response = $this->cors->handlePreflightRequest($request);
+        }
+        elseif (!$this->cors->isActualRequestAllowed($request)) {
+            $response = new Response('Not allowed.', 403);
         }
 
-        if ($this->cors->isPreflightRequest($request)) {
-            return $this->cors->handlePreflightRequest($request);
+        else {
+            $response = $this->app->handle($request, $type, $catch);
+            $response = $this->cors->addActualRequestHeaders($response, $request);
         }
 
-        if (!$this->cors->isActualRequestAllowed($request)) {
-            return new Response('Not allowed.', 403);
-        }
+        $response = $this->cors->addVaryByOriginHeader($response);
 
-        $response = $this->app->handle($request, $type, $catch);
-
-        return $this->cors->addActualRequestHeaders($response, $request);
+        return $response;
     }
 }

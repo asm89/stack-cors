@@ -34,6 +34,7 @@ class CorsService
             'exposedHeaders' => array(),
             'allowedMethods' => array(),
             'maxAge' => 0,
+            'alwaysSetVaryOrigin' => false,
         );
 
         // normalize array('*') to true
@@ -78,13 +79,9 @@ class CorsService
             return $response;
         }
 
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        $this->addVaryByOriginHeader($response, true);
 
-        if (!$response->headers->has('Vary')) {
-            $response->headers->set('Vary', 'Origin');
-        } else {
-            $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
-        }
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
 
         if ($this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
@@ -92,6 +89,19 @@ class CorsService
 
         if ($this->options['exposedHeaders']) {
             $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->options['exposedHeaders']));
+        }
+
+        return $response;
+    }
+
+    public function addVaryByOriginHeader(Response $response, $force = false)
+    {
+        if ($force || $this->options['alwaysSetVaryOrigin']) {
+            if (!$response->headers->has('Vary')) {
+                $response->headers->set('Vary', 'Origin');
+            } elseif (strpos('Origin', $response->headers->get('Vary')) === FALSE) {
+                $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
+            }
         }
 
         return $response;

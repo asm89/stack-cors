@@ -193,6 +193,40 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider varyOriginRequestData
+     */
+    public function it_appends_a_vary_origin_header_when_configured(Request $request, $configureAlwaysVaryOrigin, $expectVaryOrigin)
+    {
+        $app      = $this->createStackedApp(['alwaysSetVaryOrigin' => $configureAlwaysVaryOrigin]);
+
+        $response = $app->handle($request);
+
+        $this->assertEquals($expectVaryOrigin, $response->headers->has('Vary'));
+        if ($expectVaryOrigin) {
+            $this->assertEquals('Origin', $response->headers->get('Vary'));
+        }
+    }
+
+    public function varyOriginRequestData() {
+        $request = new Request();
+        $validPreflightRequest  = $this->createValidPreflightRequest();
+        $actualRequest = $this->createValidActualRequest();
+        return [
+            // Most requests will not cause a Vary: origin header to be added,
+            // except when explicitly configured to do so.
+            [$request, true, true],
+            [$validPreflightRequest, true, true],
+            [$request, false, false],
+            [$validPreflightRequest, false, false],
+
+            // Actual CORS request will always include a Vary: origin header.
+            [$actualRequest, true, true],
+            [$actualRequest, false, true],
+        ];
+    }
+
+    /**
+     * @test
      */
     public function it_returns_access_control_headers_on_cors_request()
     {
@@ -442,6 +476,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
                 'exposedHeaders'      => false,
                 'maxAge'              => false,
                 'supportsCredentials' => false,
+                'alwaysSetVaryOrigin' => false,
             ),
             $options
         );
