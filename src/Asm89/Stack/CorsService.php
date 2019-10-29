@@ -99,7 +99,7 @@ class CorsService
         if ($force || $this->options['alwaysSetVaryOrigin']) {
             if (!$response->headers->has('Vary')) {
                 $response->headers->set('Vary', 'Origin');
-            } elseif (strpos('Origin', $response->headers->get('Vary')) === FALSE) {
+            } elseif (strpos('Origin', $response->headers->get('Vary')) === false) {
                 $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
             }
         }

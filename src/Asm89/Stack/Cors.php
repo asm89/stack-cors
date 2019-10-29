@@ -48,14 +48,13 @@ class Cors implements HttpKernelInterface
     {
         if (!$this->cors->isCorsRequest($request)) {
             $response = $this->app->handle($request, $type, $catch);
-        }
+        } 
         elseif ($this->cors->isPreflightRequest($request)) {
             $response = $this->cors->handlePreflightRequest($request);
-        }
+        } 
         elseif (!$this->cors->isActualRequestAllowed($request)) {
             $response = new Response('Not allowed.', 403);
-        }
-
+        } 
         else {
             $response = $this->app->handle($request, $type, $catch);
             $response = $this->cors->addActualRequestHeaders($response, $request);
