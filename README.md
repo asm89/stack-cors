@@ -24,17 +24,20 @@ This package can be used as a library or as [stack middleware].
 |------------------------|------------------------------------------------------------|---------------|
 | allowedMethods         | Matches the request method.                                | `array()`     |
 | allowedOrigins         | Matches the request origin.                                | `array()`     |
-| allowedOriginsPatterns | Matches the request origin with `preg_match`.              | `array()`  |
+| allowedOriginsPatterns | Matches the request origin with `preg_match`.              | `array()`     |
 | allowedHeaders         | Sets the Access-Control-Allow-Headers response header.     | `array()`     |
 | exposedHeaders         | Sets the Access-Control-Expose-Headers response header.    | `false`       |
 | maxAge                 | Sets the Access-Control-Max-Age response header.           | `false`       |
 | supportsCredentials    | Sets the Access-Control-Allow-Credentials header.          | `false`       |
+| alwaysSetVaryOrigin    | Always set Vary: Origin.                                   | `false`       |
 
 The _allowedMethods_ and _allowedHeaders_ options are case-insensitive.
 
 You don't need to provide both _allowedOrigins_ and _allowedOriginsPatterns_. If one of the strings passed matches, it is considered a valid origin.
 
 If `array('*')` is provided to _allowedMethods_, _allowedOrigins_ or _allowedHeaders_ all methods / origins / headers are allowed.
+
+By default, the Vary: Origin header is only set on allowed non-preflight CORS responses. When the alwaysSetVaryOrigin-flag is enabled, the Vary: Origin header is added for to all responses.
 
 ### Example: using the library
 
@@ -51,6 +54,7 @@ $cors = new CorsService(array(
     'exposedHeaders'         => false,
     'maxAge'                 => false,
     'supportsCredentials'    => false,
+    'alwaysSetVaryOrigin'    => false,
 ));
 
 $cors->addActualRequestHeaders(Response $response, $origin);
@@ -79,5 +83,6 @@ $app = new Cors($app, array(
     'exposedHeaders'      => false,
     'maxAge'              => false,
     'supportsCredentials' => false,
+    'alwaysSetVaryOrigin' => false,
 ));
 ```
