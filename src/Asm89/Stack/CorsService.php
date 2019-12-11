@@ -11,6 +11,9 @@
 
 namespace Asm89\Stack;
 
+use Asm89\Stack\Exception\HeaderNotAllowedException;
+use Asm89\Stack\Exception\MethodNotAllowedException;
+use Asm89\Stack\Exception\OriginNotAllowedException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -138,11 +141,11 @@ class CorsService
     private function checkPreflightRequestConditions(Request $request)
     {
         if (!$this->checkOrigin($request)) {
-            return $this->createBadRequestResponse(403, 'Origin not allowed');
+            throw new OriginNotAllowedException();
         }
 
         if (!$this->checkMethod($request)) {
-            return $this->createBadRequestResponse(405, 'Method not allowed');
+            throw new MethodNotAllowedException($this->options['allowedMethods']);
         }
 
         $requestHeaders = array();
@@ -153,17 +156,12 @@ class CorsService
 
             foreach ($requestHeaders as $header) {
                 if (!in_array(trim($header), $this->options['allowedHeaders'])) {
-                    return $this->createBadRequestResponse(403, 'Header not allowed');
+                    throw new HeaderNotAllowedException();
                 }
             }
         }
 
         return true;
-    }
-
-    private function createBadRequestResponse($code, $reason = '')
-    {
-        return new Response($reason, $code);
     }
 
     private function isSameHost(Request $request)

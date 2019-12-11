@@ -11,6 +11,8 @@
 
 namespace Asm89\Stack;
 
+use Asm89\Stack\Exception\RequestNotAllowedException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,12 +51,23 @@ class Cors implements HttpKernelInterface
             return $this->app->handle($request, $type, $catch);
         }
 
-        if ($this->cors->isPreflightRequest($request)) {
-            return $this->cors->handlePreflightRequest($request);
-        }
+        try {
+            if ($this->cors->isPreflightRequest($request)) {
+                return $this->cors->handlePreflightRequest($request);
+            }
 
-        if (!$this->cors->isActualRequestAllowed($request)) {
-            return new Response('Not allowed.', 403);
+            if (!$this->cors->isActualRequestAllowed($request)) {
+                throw new RequestNotAllowedException();
+            }
+        } catch (HttpException $exception) {
+            if ($catch) {
+                return new Response(
+                    $exception->getMessage(),
+                    $exception->getStatusCode(),
+                    $exception->getHeaders()
+                );
+            }
+            throw $exception;
         }
 
         $response = $this->app->handle($request, $type, $catch);
