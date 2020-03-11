@@ -32,8 +32,8 @@ class Cors implements HttpKernelInterface
         'allowedMethods'         => array(),
         'allowedOrigins'         => array(),
         'allowedOriginsPatterns' => array(),
-        'exposedHeaders'         => false,
-        'maxAge'                 => false,
+        'exposedHeaders'         => array(),
+        'maxAge'                 => 0,
         'supportsCredentials'    => false,
     );
 
