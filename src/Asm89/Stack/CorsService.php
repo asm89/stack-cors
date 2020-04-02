@@ -130,7 +130,7 @@ class CorsService
             : implode(', ', $this->options['allowedHeaders']);
         $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
 
-        $response->setStatusCode(204);
+        $response->setStatusCode(200);
 
         return $response;
     }
