@@ -37,53 +37,45 @@ class CorsService
         );
 
         // normalize array('*') to true
-        if (in_array('*', $options['allowedOrigins'])) {
+        if ($options['allowedOrigins'] === array('*')) {
             $options['allowedOrigins'] = true;
         }
-        if (in_array('*', $options['allowedHeaders'])) {
+        if ($options['allowedHeaders'] === array('*')) {
             $options['allowedHeaders'] = true;
         } else {
             $options['allowedHeaders'] = array_map('strtolower', $options['allowedHeaders']);
         }
-
-        if (in_array('*', $options['allowedMethods'])) {
+        if ($options['allowedMethods'] === array('*')) {
             $options['allowedMethods'] = true;
         } else {
             $options['allowedMethods'] = array_map('strtoupper', $options['allowedMethods']);
+        }
+        if ($options['exposedHeaders'] === array('*')) {
+            $options['exposedHeaders'] = true;
+        } elseif (is_array($options['exposedHeaders'])) {
+            $options['exposedHeaders'] = array_map('strtolower', $options['exposedHeaders']);
         }
 
         return $options;
     }
 
-    public function isActualRequestAllowed(Request $request)
-    {
-        return $this->checkOrigin($request);
-    }
-
-    public function isCorsRequest(Request $request)
-    {
-        return $request->headers->has('Origin') && !$this->isSameHost($request);
-    }
-
     public function isPreflightRequest(Request $request)
     {
-        return $this->isCorsRequest($request)
-            && $request->getMethod() === 'OPTIONS'
+        return $request->getMethod() === 'OPTIONS'
             && $request->headers->has('Access-Control-Request-Method');
     }
 
     public function addActualRequestHeaders(Response $response, Request $request)
     {
-        if (!$this->checkOrigin($request)) {
-            return $response;
-        }
-
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
-
-        if (!$response->headers->has('Vary')) {
-            $response->headers->set('Vary', 'Origin');
+        if ($this->options['supportsCredentials'] === false && $this->options['allowedOrigins'] === true) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
         } else {
-            $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
+            // Regardless if the origin is valid or not, the request needs to be varied by the Origin.
+            $this->addVary($response, 'Origin');
+
+            if ($this->checkOrigin($request)) {
+                $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+            }
         }
 
         if ($this->options['supportsCredentials']) {
@@ -91,7 +83,16 @@ class CorsService
         }
 
         if ($this->options['exposedHeaders']) {
-            $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->options['exposedHeaders']));
+            if ($this->options['supportsCredentials'] === true && $this->options['exposedHeaders'] === true) {
+                // This is not allowed.
+                // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+                throw new \LogicException("Cannot set supportsCredentials to true and exposedHeaders to ['*']");
+            }
+
+            $exposedHeaders = $this->options['exposedHeaders'] === true
+                ? '*'
+                : implode(', ', $this->options['exposedHeaders']);
+            $response->headers->set('Access-Control-Expose-Headers', $exposedHeaders);
         }
 
         return $response;
@@ -99,76 +100,61 @@ class CorsService
 
     public function handlePreflightRequest(Request $request)
     {
-        if (true !== $check = $this->checkPreflightRequestConditions($request)) {
-            return $check;
-        }
-
         return $this->buildPreflightCheckResponse($request);
     }
 
     private function buildPreflightCheckResponse(Request $request)
     {
-        $response = new Response();
+        $response = new Response('', Response::HTTP_NO_CONTENT);
+
+        // If credentials are not supported, and allowed origins are any, then do not modify the Vary and allow
+        // the request to be cached.
+        if ($this->options['supportsCredentials'] === false && $this->options['allowedOrigins'] === true) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        } else {
+            // Regardless if the origin is valid or not, the request needs to be varied by the Origin.
+            $this->addVary($response, 'Origin');
+
+            if ($this->checkOrigin($request)) {
+                $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+            }
+        }
 
         if ($this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
 
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        if ($this->options['allowedMethods']) {
+            // If credentials are supported, and all methods are allowed, the request must be varied by the header.
+            if ($this->options['supportsCredentials'] === true && $this->options['allowedMethods'] === true) {
+                $this->addVary($response, 'Access-Control-Request-Method');
+                $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
+            } else {
+                $allowMethods = $this->options['allowedMethods'] === true
+                    ? '*'
+                    : implode(', ', $this->options['allowedMethods']);
+            }
+            $response->headers->set('Access-Control-Allow-Methods', $allowMethods);
+        }
+
+        if ($this->options['allowedHeaders']) {
+            // If credentials are supported, and all headers are allowed, the request must be varied by the header.
+            if ($this->options['supportsCredentials'] === true && $this->options['allowedHeaders'] === true) {
+                $this->addVary($response, 'Access-Control-Request-Headers');
+                $allowHeaders = strtoupper($request->headers->get('Access-Control-Request-Headers'));
+            } else {
+                $allowHeaders = $this->options['allowedHeaders'] === true
+                    ? '*'
+                    : implode(', ', $this->options['allowedHeaders']);
+            }
+            $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
+        }
 
         if ($this->options['maxAge'] !== null) {
             $response->headers->set('Access-Control-Max-Age', $this->options['maxAge']);
         }
 
-        $allowMethods = $this->options['allowedMethods'] === true
-            ? strtoupper($request->headers->get('Access-Control-Request-Method'))
-            : implode(', ', $this->options['allowedMethods']);
-        $response->headers->set('Access-Control-Allow-Methods', $allowMethods);
-
-        $allowHeaders = $this->options['allowedHeaders'] === true
-            ? strtoupper($request->headers->get('Access-Control-Request-Headers'))
-            : implode(', ', $this->options['allowedHeaders']);
-        $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
-
-        $response->setStatusCode(204);
-
         return $response;
-    }
-
-    private function checkPreflightRequestConditions(Request $request)
-    {
-        if (!$this->checkOrigin($request)) {
-            return $this->createBadRequestResponse(403, 'Origin not allowed');
-        }
-
-        if (!$this->checkMethod($request)) {
-            return $this->createBadRequestResponse(405, 'Method not allowed');
-        }
-
-        $requestHeaders = array();
-        // if allowedHeaders has been set to true ('*' allow all flag) just skip this check
-        if ($this->options['allowedHeaders'] !== true && $request->headers->has('Access-Control-Request-Headers')) {
-            $headers        = strtolower($request->headers->get('Access-Control-Request-Headers'));
-            $requestHeaders = array_filter(explode(',', $headers));
-
-            foreach ($requestHeaders as $header) {
-                if (!in_array(trim($header), $this->options['allowedHeaders'])) {
-                    return $this->createBadRequestResponse(403, 'Header not allowed');
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private function createBadRequestResponse($code, $reason = '')
-    {
-        return new Response($reason, $code);
-    }
-
-    private function isSameHost(Request $request)
-    {
-        return $request->headers->get('Origin') === $request->getSchemeAndHttpHost();
     }
 
     private function checkOrigin(Request $request)
@@ -192,14 +178,12 @@ class CorsService
         return false;
     }
 
-    private function checkMethod(Request $request)
-    {
-        if ($this->options['allowedMethods'] === true) {
-            // allow all '*' flag
-            return true;
+    private function addVary($response, $header) {
+        if (!$response->headers->has('Vary')) {
+            $response->headers->set('Vary', $header);
+        } else {
+            $vary = explode(', ', $response->headers->get('Vary'));
+            $response->headers->set('Vary', implode(', ', array_unique(array_merge($vary, array($header)))));
         }
-
-        $requestMethod = strtoupper($request->headers->get('Access-Control-Request-Method'));
-        return in_array($requestMethod, $this->options['allowedMethods']);
     }
 }
