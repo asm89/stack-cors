@@ -86,7 +86,7 @@ class CorsService
             if ($this->options['supportsCredentials'] === true && $this->options['exposedHeaders'] === true) {
                 // This is not allowed.
                 // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-                throw new \LogicException("Cannot set supportsCredentials to true and exposedHeaders to ['*']");
+                throw new \LogicException("Cannot set supportsCredentials to true and exposedHeaders to true or ['*']");
             }
 
             $exposedHeaders = $this->options['exposedHeaders'] === true
