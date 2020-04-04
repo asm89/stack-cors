@@ -169,7 +169,8 @@ class CorsService
     private function addOriginHeader(Response $response, Request $request)
     {
         if ($this->options['supportsCredentials'] === false && $this->options['allowedOrigins'] === true) {
-            // If any Origin is allowed, set the response for all requests (not supported if supportsCredentials is true).
+            // If any Origin is allowed, set the response for all requests.
+            // (not supported if supportsCredentials is true)
             $response->headers->set('Access-Control-Allow-Origin', '*');
         } elseif (empty($this->options['allowedOriginsPatterns']) && count($this->options['allowedOrigins']) === 1) {
             // If there is only one allowed origin, set the response for all requests,
