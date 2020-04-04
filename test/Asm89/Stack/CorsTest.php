@@ -68,7 +68,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
      */
     public function it_does_not_return_allow_origin_header_on_valid_actual_request_with_origin_not_allowed()
     {
-        $app      = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost')));
+        $app      = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost', 'notlocalhosteither')));
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
@@ -123,7 +123,12 @@ class CorsTest extends PHPUnit_Framework_TestCase
      */
     public function it_adds_a_vary_header()
     {
-        $app      = $this->createStackedApp();
+        $app      = $this->createStackedApp(array(
+            'allowedOrigins' => array(
+                'localhost',
+                'http://example.com',
+            ),
+        ));
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
@@ -138,7 +143,12 @@ class CorsTest extends PHPUnit_Framework_TestCase
      */
     public function it_appends_an_existing_vary_header()
     {
-        $app      = $this->createStackedApp(array(), array('Vary' => 'Content-Type'));
+        $app      = $this->createStackedApp(array(
+            'allowedOrigins' => array(
+                'localhost',
+                'http://example.com',
+            )
+        ), array('Vary' => 'Content-Type'));
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
@@ -208,7 +218,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $service->addActualRequestHeaders($response, $request);
 
         $expected = new Response();
-        $expected->setVary('Origin', false);
+        $expected->headers->set('Access-Control-Allow-Origin', 'notlocalhost');
 
         $this->assertEquals($response, $expected);
     }
