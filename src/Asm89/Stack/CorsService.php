@@ -178,7 +178,8 @@ class CorsService
         return false;
     }
 
-    private function addVary($response, $header) {
+    private function addVary($response, $header)
+    {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
         } else {
