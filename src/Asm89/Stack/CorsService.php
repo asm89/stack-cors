@@ -37,23 +37,35 @@ class CorsService
         );
 
         // normalize array('*') to true
-        if ($options['allowedOrigins'] === array('*')) {
+        if (is_array($options['allowedOrigins']) && in_array('*', $options['allowedOrigins'])) {
             $options['allowedOrigins'] = true;
         }
-        if ($options['allowedHeaders'] === array('*')) {
-            $options['allowedHeaders'] = true;
-        } else {
-            $options['allowedHeaders'] = array_map('strtolower', $options['allowedHeaders']);
+        if (is_array($options['allowedHeaders'])) {
+            if (in_array('*', $options['allowedHeaders'])) {
+                $options['allowedHeaders'] = true;
+            } else {
+                $options['allowedHeaders'] = array_map('strtolower', $options['allowedHeaders']);
+            }
         }
-        if ($options['allowedMethods'] === array('*')) {
-            $options['allowedMethods'] = true;
-        } else {
-            $options['allowedMethods'] = array_map('strtoupper', $options['allowedMethods']);
+        if (is_array($options['allowedMethods'])) {
+            if (in_array('*', $options['allowedMethods'])) {
+                $options['allowedMethods'] = true;
+            } else {
+                $options['allowedMethods'] = array_map('strtoupper', $options['allowedMethods']);
+            }
         }
-        if ($options['exposedHeaders'] === array('*')) {
-            $options['exposedHeaders'] = true;
-        } elseif (is_array($options['exposedHeaders'])) {
-            $options['exposedHeaders'] = array_map('strtolower', $options['exposedHeaders']);
+        if (is_array($options['exposedHeaders'])) {
+            if (in_array('*', $options['exposedHeaders'])) {
+                $options['exposedHeaders'] = true;
+            } else {
+                $options['exposedHeaders'] = array_map('strtolower', $options['exposedHeaders']);
+            }
+        }
+
+        if ($options['supportsCredentials'] === true && $options['exposedHeaders'] === true) {
+            // This is not allowed.
+            // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+            throw new \LogicException("Cannot set supportsCredentials to true and exposedHeaders to true or ['*']");
         }
 
         return $options;
@@ -75,12 +87,6 @@ class CorsService
         }
 
         if ($this->options['exposedHeaders']) {
-            if ($this->options['supportsCredentials'] === true && $this->options['exposedHeaders'] === true) {
-                // This is not allowed.
-                // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-                throw new \LogicException("Cannot set supportsCredentials to true and exposedHeaders to true or ['*']");
-            }
-
             $exposedHeaders = $this->options['exposedHeaders'] === true
                 ? '*'
                 : implode(', ', $this->options['exposedHeaders']);
