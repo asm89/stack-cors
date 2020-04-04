@@ -175,7 +175,10 @@ class CorsService
                 // If any Origin is allowed, set the response for all requests.
                 // (not supported if supportsCredentials is true)
                 $response->headers->set('Access-Control-Allow-Origin', '*');
-            } elseif (!$this->options['allowedOriginsPatterns'] && count($this->options['allowedOrigins']) === 1) {
+            } elseif (empty($this->options['allowedOriginsPatterns'])
+                && is_array($this->options['allowedOrigins'])
+                && count($this->options['allowedOrigins']) === 1
+            ) {
                 // If there is only one allowed origin, set the response for all requests,
                 // since the requesting Origin is irrelevant.
                 $response->headers->set('Access-Control-Allow-Origin', $this->options['allowedOrigins'][0]);
