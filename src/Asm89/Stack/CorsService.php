@@ -168,22 +168,26 @@ class CorsService
 
     private function addOriginHeader(Response $response, Request $request)
     {
-        if ($this->options['supportsCredentials'] === false && $this->options['allowedOrigins'] === true) {
-            // If any Origin is allowed, set the response for all requests.
-            // (not supported if supportsCredentials is true)
-            $response->headers->set('Access-Control-Allow-Origin', '*');
-        } elseif (empty($this->options['allowedOriginsPatterns']) && count($this->options['allowedOrigins']) === 1) {
-            // If there is only one allowed origin, set the response for all requests,
-            // since the requesting Origin is irrelevant.
-            $response->headers->set('Access-Control-Allow-Origin', $this->options['allowedOrigins'][0]);
-        } else {
-            // Regardless if the origin is valid or not, the request needs to be varied by the Origin.
-            $this->addVary($response, 'Origin');
+        if ($this->options['allowedOrigins'] || $this->options['allowedOriginsPatterns']) {
+            if ($this->options['supportsCredentials'] === false && $this->options['allowedOrigins'] === true) {
+                // If any Origin is allowed, set the response for all requests.
+                // (not supported if supportsCredentials is true)
+                $response->headers->set('Access-Control-Allow-Origin', '*');
+            } elseif (!$this->options['allowedOriginsPatterns'] && count($this->options['allowedOrigins']) === 1) {
+                // If there is only one allowed origin, set the response for all requests,
+                // since the requesting Origin is irrelevant.
+                $response->headers->set('Access-Control-Allow-Origin', $this->options['allowedOrigins'][0]);
+            } else {
+                // Regardless if the origin is valid or not, the request needs to be varied by the Origin.
+                $this->addVary($response, 'Origin');
 
-            if ($this->checkOrigin($request)) {
-                $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+                if ($this->checkOrigin($request)) {
+                    $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+                }
             }
         }
+
+        return $response;
     }
 
     private function addCredentialsHeader(Response $response)
@@ -191,5 +195,7 @@ class CorsService
         if ($this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
+
+        return $response;
     }
 }
