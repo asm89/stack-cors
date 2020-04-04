@@ -164,6 +164,8 @@ class CorsService
             $vary = explode(', ', $response->headers->get('Vary'));
             $response->headers->set('Vary', implode(', ', array_unique(array_merge($vary, array($header)))));
         }
+
+        return $response;
     }
 
     private function addOriginHeader(Response $response, Request $request)
