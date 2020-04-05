@@ -52,19 +52,6 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_403_on_valid_actual_request_with_origin_not_allowed()
-    {
-        $app      = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost')));
-        $request  = $this->createValidActualRequest();
-
-        $response = $app->handle($request);
-
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    /**
-     * @test
-     */
     public function it_returns_allow_origin_header_on_valid_actual_request()
     {
         $app      = $this->createStackedApp();
