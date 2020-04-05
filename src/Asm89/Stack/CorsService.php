@@ -36,9 +36,9 @@ class CorsService
             'maxAge' => 0,
         );
 
-        // normalize array('*') to true
-        if (in_array('*', $options['allowedOrigins'])) {
-            $options['allowedOrigins'] = true;
+        // normalize true to array('*')
+        if ($options['allowedOrigins'] === true ) {
+            $options['allowedOrigins'] = ['*'];
         }
         if (in_array('*', $options['allowedHeaders'])) {
             $options['allowedHeaders'] = true;
@@ -74,16 +74,18 @@ class CorsService
 
     public function addActualRequestHeaders(Response $response, Request $request)
     {
-        if (!$this->checkOrigin($request)) {
-            return $response;
-        }
+        if ($this->options['supportsCredentials'] || !empty($this->options['allowedOriginsPatterns'])) {
+            if ($this->checkOrigin($request)) {
+                $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+            }
 
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
-
-        if (!$response->headers->has('Vary')) {
-            $response->headers->set('Vary', 'Origin');
+            if (!$response->headers->has('Vary')) {
+                $response->headers->set('Vary', 'Origin');
+            } else {
+                $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
+            }
         } else {
-            $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
+            $response->headers->set('Access-Control-Allow-Origin', implode(', ', $this->options['allowedOrigins']));
         }
 
         if ($this->options['supportsCredentials']) {
@@ -173,7 +175,7 @@ class CorsService
 
     private function checkOrigin(Request $request)
     {
-        if ($this->options['allowedOrigins'] === true) {
+        if (in_array('*', $this->options['allowedOrigins'], true)) {
             // allow all '*' flag
             return true;
         }

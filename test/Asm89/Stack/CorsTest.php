@@ -76,7 +76,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
-        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -92,19 +92,6 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('FOO, BAR', $response->headers->get('Access-Control-Allow-Headers'));
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_return_allow_origin_header_on_valid_actual_request_with_origin_not_allowed()
-    {
-        $app      = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost')));
-        $request  = $this->createValidActualRequest();
-
-        $response = $app->handle($request);
-
-        $this->assertFalse($response->headers->has('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -150,11 +137,12 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @see http://www.w3.org/TR/cors/index.html#resource-implementation
      */
-    public function it_adds_a_vary_header()
+    public function it_adds_a_vary_header_when_supports_credentials()
     {
-        $app      = $this->createStackedApp();
+        $app      = $this->createStackedApp(array(
+            'supportsCredentials' => true,
+        ));
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
@@ -165,11 +153,49 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     */
+    public function it_adds_a_vary_header_when_has_origin_patterns()
+    {
+        $app      = $this->createStackedApp(array(
+            'allowedOriginsPatterns' => array('/l(o|0)calh(o|0)st/')
+        ));
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Vary'));
+        $this->assertEquals('Origin', $response->headers->get('Vary'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_add_a_vary_header_when_simple_origins()
+    {
+        $app      = $this->createStackedApp(array(
+            'allowedOrigins' => array('*', 'http://localhost')
+        ));
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertFalse($response->headers->has('Vary'));
+    }
+
+    /**
+     * @test
      * @see http://www.w3.org/TR/cors/index.html#resource-implementation
      */
     public function it_appends_an_existing_vary_header()
     {
-        $app      = $this->createStackedApp(array(), array('Vary' => 'Content-Type'));
+        $app      = $this->createStackedApp(
+            array(
+                'supportsCredentials' => true,
+            ),
+            array(
+                'Vary' => 'Content-Type'
+            )
+        );
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
@@ -208,6 +234,8 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertTrue($response->headers->has('Vary'));
+        $this->assertEquals('Origin', $response->headers->get('Vary'));
     }
 
     /**
@@ -240,7 +268,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_does_not_modify_request_with_origin_not_allowed()
+    public function it_does_not_allow_request_with_origin_not_allowed()
     {
         $passedOptions = array(
           'allowedOrigins' => array('notlocalhost'),
@@ -251,7 +279,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $response = new Response();
         $service->addActualRequestHeaders($response, $request);
 
-        $this->assertEquals($response, new Response());
+        $this->assertNotEquals($request->headers->get('Origin'), $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -269,7 +297,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $response = new Response();
         $service->addActualRequestHeaders($response, $request);
 
-        $this->assertEquals($response, new Response());
+        $this->assertNotEquals($request->headers->get('Origin'), $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
