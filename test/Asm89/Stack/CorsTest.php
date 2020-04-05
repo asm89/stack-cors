@@ -227,19 +227,6 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_403_on_valid_preflight_request_with_origin_not_allowed()
-    {
-        $app     = $this->createStackedApp(array('allowedOrigins' => array('notlocalhost')));
-        $request = $this->createValidPreflightRequest();
-
-        $response = $app->handle($request);
-
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    /**
-     * @test
-     */
     public function it_does_not_modify_request_with_origin_not_allowed()
     {
         $passedOptions = array(
@@ -275,19 +262,6 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_405_on_valid_preflight_request_with_method_not_allowed()
-    {
-        $app     = $this->createStackedApp(array('allowedMethods' => array('put')));
-        $request = $this->createValidPreflightRequest();
-
-        $response = $app->handle($request);
-
-        $this->assertEquals(405, $response->getStatusCode());
-    }
-
-    /**
-     * @test
-     */
     public function it_allow_methods_on_valid_preflight_request()
     {
         $app     = $this->createStackedApp(array('allowedMethods' => array('get', 'put')));
@@ -313,20 +287,6 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
         // it will return the Access-Control-Request-Method pass in the request
         $this->assertEquals('GET', $response->headers->get('Access-Control-Allow-Methods'));
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_403_on_valid_preflight_request_with_one_of_the_requested_headers_not_allowed()
-    {
-        $app     = $this->createStackedApp();
-        $request = $this->createValidPreflightRequest();
-        $request->headers->set('Access-Control-Request-Headers', 'x-not-allowed-header');
-
-        $response = $app->handle($request);
-
-        $this->assertEquals(403, $response->getStatusCode());
     }
 
     /**

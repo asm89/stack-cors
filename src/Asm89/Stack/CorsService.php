@@ -55,6 +55,9 @@ class CorsService
         return $options;
     }
 
+    /**
+     * @deprecated since 1.4, will be removed in 2.x
+     */
     public function isActualRequestAllowed(Request $request)
     {
         return $this->checkOrigin($request);
@@ -99,10 +102,6 @@ class CorsService
 
     public function handlePreflightRequest(Request $request)
     {
-        if (true !== $check = $this->checkPreflightRequestConditions($request)) {
-            return $check;
-        }
-
         return $this->buildPreflightCheckResponse($request);
     }
 
@@ -135,37 +134,6 @@ class CorsService
         return $response;
     }
 
-    private function checkPreflightRequestConditions(Request $request)
-    {
-        if (!$this->checkOrigin($request)) {
-            return $this->createBadRequestResponse(403, 'Origin not allowed');
-        }
-
-        if (!$this->checkMethod($request)) {
-            return $this->createBadRequestResponse(405, 'Method not allowed');
-        }
-
-        $requestHeaders = array();
-        // if allowedHeaders has been set to true ('*' allow all flag) just skip this check
-        if ($this->options['allowedHeaders'] !== true && $request->headers->has('Access-Control-Request-Headers')) {
-            $headers        = strtolower($request->headers->get('Access-Control-Request-Headers'));
-            $requestHeaders = array_filter(explode(',', $headers));
-
-            foreach ($requestHeaders as $header) {
-                if (!in_array(trim($header), $this->options['allowedHeaders'])) {
-                    return $this->createBadRequestResponse(403, 'Header not allowed');
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private function createBadRequestResponse($code, $reason = '')
-    {
-        return new Response($reason, $code);
-    }
-
     private function isSameHost(Request $request)
     {
         return $request->headers->get('Origin') === $request->getSchemeAndHttpHost();
@@ -190,16 +158,5 @@ class CorsService
         }
 
         return false;
-    }
-
-    private function checkMethod(Request $request)
-    {
-        if ($this->options['allowedMethods'] === true) {
-            // allow all '*' flag
-            return true;
-        }
-
-        $requestMethod = strtoupper($request->headers->get('Access-Control-Request-Method'));
-        return in_array($requestMethod, $this->options['allowedMethods']);
     }
 }
