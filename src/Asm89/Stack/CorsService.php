@@ -37,7 +37,7 @@ class CorsService
         );
 
         // normalize true to array('*')
-        if ($options['allowedOrigins'] === true ) {
+        if ($options['allowedOrigins'] === true) {
             $options['allowedOrigins'] = ['*'];
         }
         if (in_array('*', $options['allowedHeaders'])) {
