@@ -21,37 +21,6 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_does_not_modify_on_a_request_without_origin()
-    {
-        $app                = $this->createStackedApp();
-        $unmodifiedResponse = new Response();
-
-        $response = $app->handle(new Request());
-
-        $this->assertEquals($unmodifiedResponse->headers, $response->headers);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_modify_on_a_request_with_same_origin()
-    {
-        $app = $this->createStackedApp(array('allowedOrigins' => array('*')));
-        $unmodifiedResponse = new Response();
-
-        $request  = new Request();
-        $request->headers->set('Host', 'foo.com');
-        $request->headers->set('Origin', 'http://foo.com');
-        $response = $app->handle($request);
-        $unmodifiedResponse->headers->date = '';
-        $response->headers->date = '';
-
-        $this->assertEquals($unmodifiedResponse->headers, $response->headers);
-    }
-
-    /**
-     * @test
-     */
     public function it_returns_allow_origin_header_on_valid_actual_request()
     {
         $app      = $this->createStackedApp();
@@ -138,9 +107,10 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_adds_a_vary_header_when_supports_credentials()
+    public function it_adds_a_vary_header_when_wildcard_and_supports_credentials()
     {
         $app      = $this->createStackedApp(array(
+            'allowedOrigins' => ['*'],
             'supportsCredentials' => true,
         ));
         $request  = $this->createValidActualRequest();
@@ -190,6 +160,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
     {
         $app      = $this->createStackedApp(
             array(
+                'allowedOrigins' => ['*'],
                 'supportsCredentials' => true,
             ),
             array(

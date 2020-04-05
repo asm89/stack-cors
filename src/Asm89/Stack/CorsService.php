@@ -36,9 +36,9 @@ class CorsService
             'maxAge' => 0,
         );
 
-        // normalize true to array('*')
-        if ($options['allowedOrigins'] === true) {
-            $options['allowedOrigins'] = ['*'];
+        // normalize array('*') to true
+        if (in_array('*', $options['allowedOrigins'])) {
+            $options['allowedOrigins'] = true;
         }
         if (in_array('*', $options['allowedHeaders'])) {
             $options['allowedHeaders'] = true;
@@ -74,7 +74,13 @@ class CorsService
 
     public function addActualRequestHeaders(Response $response, Request $request)
     {
-        if ($this->options['supportsCredentials'] || !empty($this->options['allowedOriginsPatterns'])) {
+        if ($this->options['allowedOrigins'] === true && !$this->options['supportsCredentials']) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        } elseif ($this->options['allowedOrigins'] !== true &&
+            count($this->options['allowedOrigins']) === 1 &&
+            empty($this->options['allowedOriginsPatterns'])) {
+            $response->headers->set('Access-Control-Allow-Origin', array_values($this->options['allowedOrigins'])[0]);
+        } else {
             if ($this->checkOrigin($request)) {
                 $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
             }
@@ -84,8 +90,6 @@ class CorsService
             } else {
                 $response->headers->set('Vary', $response->headers->get('Vary') . ', Origin');
             }
-        } else {
-            $response->headers->set('Access-Control-Allow-Origin', implode(', ', $this->options['allowedOrigins']));
         }
 
         if ($this->options['supportsCredentials']) {
@@ -175,10 +179,10 @@ class CorsService
 
     private function checkOrigin(Request $request)
     {
-        if (in_array('*', $this->options['allowedOrigins'], true)) {
-            // allow all '*' flag
+        if ($this->options['allowedOrigins'] === true) {
             return true;
         }
+
         $origin = $request->headers->get('Origin');
 
         if (in_array($origin, $this->options['allowedOrigins'])) {
