@@ -59,7 +59,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $response = $app->handle($request);
 
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Headers'));
     }
 
@@ -286,7 +286,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $response = $app->handle($request);
 
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         // the response will have the "allowedHeaders" value passed to Cors rather than the request one
@@ -371,7 +371,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $request->headers->set('Access-Control-Request-Headers', '');
 
         $response = $app->handle($request);
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     private function createValidActualRequest()

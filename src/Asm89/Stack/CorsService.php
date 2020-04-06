@@ -127,7 +127,7 @@ class CorsService
         return $this->buildPreflightCheckResponse(new Response('', Response::HTTP_NO_CONTENT), $request);
     }
 
-    private function buildPreflightCheckResponse(Response $rsponse, Request $request)
+    private function buildPreflightCheckResponse(Response $response, Request $request)
     {
         $this->addOriginHeader($response, $request);
         $this->addCredentialsHeader($response);
