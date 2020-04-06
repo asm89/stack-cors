@@ -421,7 +421,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
      */
     public function it_doesnt_set_max_age_when_false()
     {
-        $app     = $this->createStackedApp(array('maxAge' => false));
+        $app     = $this->createStackedApp(array('maxAge' => null));
         $request = $this->createValidPreflightRequest();
 
         $response = $app->handle($request);
