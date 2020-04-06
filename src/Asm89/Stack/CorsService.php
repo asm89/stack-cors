@@ -116,7 +116,7 @@ class CorsService
 
         $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
 
-        if ($this->options['maxAge']) {
+        if ($this->options['maxAge'] !== null) {
             $response->headers->set('Access-Control-Max-Age', $this->options['maxAge']);
         }
 

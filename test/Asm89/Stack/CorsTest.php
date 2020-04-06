@@ -405,6 +405,33 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_sets_max_age_when_zero()
+    {
+        $app     = $this->createStackedApp(array('maxAge' => 0));
+        $request = $this->createValidPreflightRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Access-Control-Max-Age'));
+        $this->assertEquals(0, $response->headers->get('Access-Control-Max-Age'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_set_max_age_when_false()
+    {
+        $app     = $this->createStackedApp(array('maxAge' => null));
+        $request = $this->createValidPreflightRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertFalse($response->headers->has('Access-Control-Max-Age'));
+    }
+
+    /**
+     * @test
+     */
     public function it_skips_empty_access_control_request_header()
     {
         $app     = $this->createStackedApp();
