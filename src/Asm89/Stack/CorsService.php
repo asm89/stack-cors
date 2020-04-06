@@ -71,9 +71,35 @@ class CorsService
         return $options;
     }
 
+    /**
+     * @deprecated
+     *
+     * @todo throw a deprecation notice?
+     */
+    public function isActualRequestAllowed(Request $request)
+    {
+        return $this->checkOrigin($request);
+    }
+
+    /**
+     * @deprecated
+     *
+     * @todo throw a deprecation notice?
+     */
+    public function isCorsRequest(Request $request)
+    {
+        return $request->headers->has('Origin') && !$this->isSameHost($request);
+    }
+
+    /**
+     * @deprecated
+     *
+     * @todo throw a deprecation notice?
+     */
     public function isPreflightRequest(Request $request)
     {
-        return $request->getMethod() === 'OPTIONS'
+        return $this->isCorsRequest($request)
+            && $request->getMethod() === 'OPTIONS'
             && $request->headers->has('Access-Control-Request-Method');
     }
 
@@ -98,13 +124,11 @@ class CorsService
 
     public function handlePreflightRequest(Request $request)
     {
-        return $this->buildPreflightCheckResponse($request);
+        return $this->buildPreflightCheckResponse(new Response('', Response::HTTP_NO_CONTENT), $request);
     }
 
-    private function buildPreflightCheckResponse(Request $request)
+    private function buildPreflightCheckResponse(Response $rsponse, Request $request)
     {
-        $response = new Response('', Response::HTTP_NO_CONTENT);
-
         $this->addOriginHeader($response, $request);
         $this->addCredentialsHeader($response);
 
@@ -139,6 +163,10 @@ class CorsService
         }
 
         return $response;
+    }
+
+    public function addPreflightRequestHeader(Response $response, Request $request) {
+        return $this->buildPreflightCheckResponse($response, $request);
     }
 
     private function checkOrigin(Request $request)
