@@ -131,14 +131,13 @@ class CorsService
 
         $this->addAllowedOrigin($response, $request);
 
-        if ($this->options['maxAge'] !== null) {
-            $response->headers->set('Access-Control-Max-Age', $this->options['maxAge']);
-        }
+        $maxAge = $this->options['maxAge'];
 
         if ($this->options['allowedMethods'] === true) {
             if ($this->options['supportsCredentials']) {
                 $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
                 $this->varyHeader('Access-Control-Request-Method');
+                $maxAge = -1;
             } else {
                 $allowMethods = '*';
             }
@@ -151,6 +150,7 @@ class CorsService
             if ($this->options['supportsCredentials']) {
                 $allowHeaders = strtoupper($request->headers->get('Access-Control-Request-Headers'));
                 $this->varyHeader('Access-Control-Request-Headers');
+                $maxAge = -1;
             } else {
                 $allowHeaders = '*';
             }
@@ -158,6 +158,10 @@ class CorsService
             $allowHeaders = implode(', ', $this->options['allowedHeaders']);
         }
         $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
+
+        if ($maxAge !== null) {
+            $response->headers->set('Access-Control-Max-Age', $maxAge);
+        }
 
         $response->setStatusCode(204);
 
