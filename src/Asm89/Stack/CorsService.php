@@ -165,7 +165,8 @@ class CorsService
         return $response;
     }
 
-    public function addPreflightRequestHeader(Response $response, Request $request) {
+    public function addPreflightRequestHeader(Response $response, Request $request)
+    {
         return $this->buildPreflightCheckResponse($response, $request);
     }
 
