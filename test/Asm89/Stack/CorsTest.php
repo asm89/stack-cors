@@ -60,7 +60,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $response = $app->handle($request);
 
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals('FOO, BAR', $response->headers->get('Access-Control-Allow-Headers'));
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Headers'));
     }
 
     /**
@@ -311,7 +311,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
         // it will return the Access-Control-Request-Method pass in the request
-        $this->assertEquals('GET', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Methods'));
     }
 
     /**
