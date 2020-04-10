@@ -135,9 +135,7 @@ class CorsService
 
         if ($this->options['allowedMethods'] === true) {
             if ($this->options['supportsCredentials']) {
-                $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
-                $this->varyHeader('Access-Control-Request-Method');
-                $maxAge = -1;
+                $allowMethods = 'GET, HEAD, PUT, PATCH, POST, DELETE';
             } else {
                 $allowMethods = '*';
             }
