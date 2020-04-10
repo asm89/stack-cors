@@ -91,7 +91,15 @@ class CorsService
         return $response;
     }
 
+    /**
+     * @deprecated use isOriginAllowed
+     */
     public function isActualRequestAllowed(Request $request)
+    {
+        return $this->isOriginAllowed($request);
+    }
+
+    public function isOriginAllowed(Request $request)
     {
         if ($this->options['allowedOrigins'] === true) {
             return true;
@@ -126,18 +134,28 @@ class CorsService
     private function configureAllowedOrigin(Response $response, Request $request)
     {
         if ($this->options['allowedOrigins'] === true && !$this->options['supportsCredentials']) {
+            // Safe+cacheable, allow everything
             $response->headers->set('Access-Control-Allow-Origin', '*');
-        } elseif ($this->options['allowedOrigins'] !== true &&
-            count($this->options['allowedOrigins']) === 1 &&
-            empty($this->options['allowedOriginsPatterns'])) {
+        } elseif ($this->isSingleOriginAllowed()) {
+            // Single origins can be safely set
             $response->headers->set('Access-Control-Allow-Origin', array_values($this->options['allowedOrigins'])[0]);
         } else {
-            if ($this->isActualRequestAllowed($request)) {
+            // For dynamic headers, check the origin first
+            if ($this->isOriginAllowed($request)) {
                 $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
             }
 
             $this->varyHeader($response, 'Origin');
         }
+    }
+
+    private function isSingleOriginAllowed()
+    {
+        if ($this->options['allowedOrigins'] === true || !empty($this->options['allowedOriginsPatterns'])) {
+            return false;
+        }
+
+        return count($this->options['allowedOrigins']) === 1;
     }
 
     private function configureAllowedMethods(Response $response, Request $request)
