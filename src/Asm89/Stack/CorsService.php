@@ -74,20 +74,16 @@ class CorsService
 
     public function addActualRequestHeaders(Response $response, Request $request)
     {
-        $this->addAllowedOrigin($response, $request);
+        $this->configureAllowedOrigin($response, $request);
 
-        if ($this->options['supportsCredentials']) {
-            $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        }
+        $this->configureAllowCredentials($response, $request);
 
-        if ($this->options['exposedHeaders']) {
-            $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->options['exposedHeaders']));
-        }
+        $this->configureExposedHeaders($response, $request);
 
         return $response;
     }
 
-    private function addAllowedOrigin(Response $response, Request $request)
+    private function configureAllowedOrigin(Response $response, Request $request)
     {
         if ($this->options['allowedOrigins'] === true && !$this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Origin', '*');
@@ -104,6 +100,56 @@ class CorsService
         }
     }
 
+    private function configureAllowedMethods(Response $response, Request $request)
+    {
+        if ($this->options['allowedMethods'] === true) {
+            if ($this->options['supportsCredentials']) {
+                $allowMethods = 'GET, HEAD, PUT, PATCH, POST, DELETE';
+            } else {
+                $allowMethods = '*';
+            }
+        } else {
+            $allowMethods = implode(', ', $this->options['allowedMethods']);
+        }
+
+        $response->headers->set('Access-Control-Allow-Methods', $allowMethods);
+    }
+
+    private function configureAllowedHeaders(Response $response, Request $request)
+    {
+        if ($this->options['allowedHeaders'] === true) {
+            if ($this->options['supportsCredentials']) {
+                $allowHeaders = strtoupper($request->headers->get('Access-Control-Request-Headers'));
+                $this->varyHeader('Access-Control-Request-Headers');
+            } else {
+                $allowHeaders = '*';
+            }
+        } else {
+            $allowHeaders = implode(', ', $this->options['allowedHeaders']);
+        }
+        $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
+    }
+
+    private function configureAllowCredentials(Response $response, Request $request){
+        if ($this->options['supportsCredentials']) {
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        }
+    }
+
+    private function configureExposedHeaders(Response $response, Request $request)
+    {
+        if ($this->options['exposedHeaders']) {
+            $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->options['exposedHeaders']));
+        }
+    }
+
+    private function configureMaxAge(Response $response, Request $request){
+        if ($this->options['maxAge'] !== null) {
+            $response->headers->set('Access-Control-Max-Age', (int) $this->options['maxAge']);
+        }
+    }
+
+
     private function varyHeader(Response $response, $header)
     {
         if (!$response->headers->has('Vary')) {
@@ -112,6 +158,7 @@ class CorsService
             $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
         }
     }
+
     public function handlePreflightRequest(Request $request)
     {
         if (true !== $check = $this->checkPreflightRequestConditions($request)) {
@@ -125,38 +172,15 @@ class CorsService
     {
         $response = new Response();
 
-        if ($this->options['supportsCredentials']) {
-            $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        }
+        $this->configureAllowedOrigin($response, $request);
 
-        $this->addAllowedOrigin($response, $request);
+        $this->configureAllowCredentials($response, $request);
 
-        if ($this->options['allowedMethods'] === true) {
-            if ($this->options['supportsCredentials']) {
-                $allowMethods = 'GET, HEAD, PUT, PATCH, POST, DELETE';
-            } else {
-                $allowMethods = '*';
-            }
-        } else {
-            $allowMethods = implode(', ', $this->options['allowedMethods']);
-        }
-        $response->headers->set('Access-Control-Allow-Methods', $allowMethods);
+        $this->configureAllowedMethods($response, $request);
 
-        if ($this->options['allowedHeaders'] === true) {
-            if ($this->options['supportsCredentials']) {
-                $allowHeaders = strtoupper($request->headers->get('Access-Control-Request-Headers'));
-                $this->varyHeader('Access-Control-Request-Headers');
-            } else {
-                $allowHeaders = '*';
-            }
-        } else {
-            $allowHeaders = implode(', ', $this->options['allowedHeaders']);
-        }
-        $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
+        $this->configureAllowedHeaders($response, $request);
 
-        if ($this->options['maxAge'] !== null) {
-            $response->headers->set('Access-Control-Max-Age', (int) $this->options['maxAge']);
-        }
+        $this->configureMaxAge($response, $request);
 
         $response->setStatusCode(204);
 
