@@ -188,7 +188,8 @@ class CorsService
         $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
     }
 
-    private function configureAllowCredentials(Response $response, Request $request){
+    private function configureAllowCredentials(Response $response, Request $request)
+    {
         if ($this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
@@ -201,7 +202,8 @@ class CorsService
         }
     }
 
-    private function configureMaxAge(Response $response, Request $request){
+    private function configureMaxAge(Response $response, Request $request)
+    {
         if ($this->options['maxAge'] !== null) {
             $response->headers->set('Access-Control-Max-Age', (int) $this->options['maxAge']);
         }
