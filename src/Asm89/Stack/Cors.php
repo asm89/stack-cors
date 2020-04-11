@@ -49,7 +49,7 @@ class Cors implements HttpKernelInterface
             try {
                 $response = $this->app->handle($request, $type, false);
 
-                if ($repsonse) {
+                if ($response) {
                     return $this->cors->addPreflightRequestHeader($response, $request);
                 }
             } catch (\Exceptoin $e) {
