@@ -164,7 +164,7 @@ class CorsService
         if ($this->options['allowedMethods'] === true) {
             if ($this->options['supportsCredentials']) {
                 $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
-                // Vary is always done
+                $this->varyHeader($response, 'Access-Control-Request-Method');
             } else {
                 $allowMethods = '*';
             }
@@ -215,7 +215,7 @@ class CorsService
     {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
-        } else {
+        } elseif (!in_array($header, explode(', ', $response->headers->get('Vary')))) {
             $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
         }
     }
