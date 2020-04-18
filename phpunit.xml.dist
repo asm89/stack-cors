@@ -8,11 +8,10 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
 >
   <testsuites>
     <testsuite name="Stack Cors Test Suite">
-      <directory>./test/Asm89/</directory>
+      <directory>./tests</directory>
     </testsuite>
   </testsuites>
 
