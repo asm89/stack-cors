@@ -69,9 +69,7 @@ class CorsService
 
     public function isPreflightRequest(Request $request)
     {
-        return $this->isCorsRequest($request)
-            && $request->getMethod() === 'OPTIONS'
-            && $request->headers->has('Access-Control-Request-Method');
+        return $request->getMethod() === 'OPTIONS' && $request->headers->has('Access-Control-Request-Method');
     }
 
     public function handlePreflightRequest(Request $request)
@@ -213,11 +211,11 @@ class CorsService
         }
     }
 
-    private function varyHeader(Response $response, $header)
+    public function varyHeader(Response $response, $header)
     {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
-        } else {
+        } elseif (!in_array($header, explode(', ', $response->headers->get('Vary')))) {
             $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
         }
     }

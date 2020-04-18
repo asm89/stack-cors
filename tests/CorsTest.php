@@ -105,7 +105,7 @@ class CorsTest extends TestCase
 
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('Foo, BAR', $response->headers->get('Access-Control-Allow-Headers'));
-        $this->assertEquals('Access-Control-Request-Headers', $response->headers->get('Vary'));
+        $this->assertStringContainsString('Access-Control-Request-Headers', $response->headers->get('Vary'));
     }
 
     /**
@@ -307,6 +307,20 @@ class CorsTest extends TestCase
     /**
      * @test
      */
+    public function it_adds_vary_headers_on_preflight_non_preflight_options()
+    {
+        $app      = $this->createStackedApp();
+        $request  = new Request();
+        $request->setMethod('OPTIONS');
+
+        $response = $app->handle($request);
+
+        $this->assertEquals('Access-Control-Request-Method', $response->headers->get('Vary'));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_access_control_headers_on_valid_preflight_request()
     {
         $app     = $this->createStackedApp();
@@ -316,6 +330,7 @@ class CorsTest extends TestCase
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('Access-Control-Request-Method', $response->headers->get('Vary'));
     }
 
     /**
