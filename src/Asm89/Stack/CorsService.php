@@ -162,7 +162,8 @@ class CorsService
     {
         if ($this->options['allowedMethods'] === true) {
             if ($this->options['supportsCredentials']) {
-                $allowMethods = 'GET, HEAD, PUT, PATCH, POST, DELETE';
+                $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
+                $this->varyHeader($response, 'Access-Control-Request-Method');
             } else {
                 $allowMethods = '*';
             }
@@ -178,7 +179,7 @@ class CorsService
         if ($this->options['allowedHeaders'] === true) {
             if ($this->options['supportsCredentials']) {
                 $allowHeaders = strtoupper($request->headers->get('Access-Control-Request-Headers'));
-                $this->varyHeader('Access-Control-Request-Headers');
+                $this->varyHeader($response, 'Access-Control-Request-Headers');
             } else {
                 $allowHeaders = '*';
             }

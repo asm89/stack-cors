@@ -66,6 +66,22 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_returns_allow_headers_header_on_allow_all_headers_request_credentials()
+    {
+        $app      = $this->createStackedApp(array('allowedHeaders' => array('*'), 'supportsCredentials' => true));
+        $request = $this->createValidPreflightRequest();
+        $request->headers->set('Access-Control-Request-Headers', 'Foo, BAR');
+
+        $response = $app->handle($request);
+
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals('FOO, BAR', $response->headers->get('Access-Control-Allow-Headers'));
+        $this->assertEquals('Access-Control-Request-Headers', $response->headers->get('Vary'));
+    }
+
+    /**
+     * @test
+     */
     public function it_sets_allow_credentials_header_when_flag_is_set_on_valid_actual_request()
     {
         $app     = $this->createStackedApp(array('supportsCredentials' => true));
@@ -124,6 +140,24 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_adds_multiple_vary_header_when_wildcard_and_supports_credentials()
+    {
+        $app = $this->createStackedApp(array(
+            'allowedOrigins' => ['*'],
+            'allowedMethods' => ['*'],
+            'supportsCredentials' => true,
+        ));
+        $request  = $this->createValidPreflightRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Vary'));
+        $this->assertEquals('Origin, Access-Control-Request-Method', $response->headers->get('Vary'));
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_a_vary_header_when_has_origin_patterns()
     {
         $app      = $this->createStackedApp(array(
@@ -140,7 +174,7 @@ class CorsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_doesnt_add_a_vary_header_when_simple_origins()
+    public function it_doesnt_add_a_vary_header_when_wilcard_origins()
     {
         $app      = $this->createStackedApp(array(
             'allowedOrigins' => array('*', 'http://localhost')
@@ -150,6 +184,38 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $response = $app->handle($request);
 
         $this->assertFalse($response->headers->has('Vary'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_add_a_vary_header_when_simple_origins()
+    {
+        $app = $this->createStackedApp(array(
+            'allowedOrigins' => array('http://localhost')
+        ));
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertFalse($response->headers->has('Vary'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_vary_header_when_multiple_origins()
+    {
+        $app = $this->createStackedApp(array(
+           'allowedOrigins' => array('localhost', 'http://example.com')
+        ));
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertTrue($response->headers->has('Vary'));
     }
 
     /**
@@ -286,6 +352,23 @@ class CorsTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
         // it will return the Access-Control-Request-Method pass in the request
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Methods'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_valid_preflight_request_with_allow_methods_all_credentials()
+    {
+        $app     = $this->createStackedApp(array('allowedMethods' => array('*'), 'supportsCredentials' => true));
+        $request = $this->createValidPreflightRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
+        // it will return the Access-Control-Request-Method pass in the request
+        $this->assertEquals('GET', $response->headers->get('Access-Control-Allow-Methods'));
+        // it should vary this header
+        $this->assertEquals('Access-Control-Request-Method', $response->headers->get('Vary'));
     }
 
     /**
