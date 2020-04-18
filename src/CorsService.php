@@ -78,11 +78,7 @@ class CorsService
 
         $response->setStatusCode(204);
 
-        $response = $this->addPreflightRequestHeaders($response, $request);
-
-        $this->varyHeader($response, 'Access-Control-Request-Method');
-
-        return $response;
+        return $this->addPreflightRequestHeaders($response, $request);
     }
 
     public function addPreflightRequestHeaders(Response $response, Request $request)
