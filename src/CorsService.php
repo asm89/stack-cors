@@ -69,9 +69,7 @@ class CorsService
 
     public function isPreflightRequest(Request $request)
     {
-        return $this->isCorsRequest($request)
-            && $request->getMethod() === 'OPTIONS'
-            && $request->headers->has('Access-Control-Request-Method');
+        return $request->getMethod() === 'OPTIONS' && $request->headers->has('Access-Control-Request-Method');
     }
 
     public function handlePreflightRequest(Request $request)
@@ -80,7 +78,11 @@ class CorsService
 
         $response->setStatusCode(204);
 
-        return $this->addPreflightRequestHeaders($response, $request);
+        $response = $this->addPreflightRequestHeaders($response, $request);
+
+        $this->varyHeader($response, 'Access-Control-Request-Method');
+
+        return $response;
     }
 
     public function addPreflightRequestHeaders(Response $response, Request $request)
@@ -166,7 +168,7 @@ class CorsService
         if ($this->options['allowedMethods'] === true) {
             if ($this->options['supportsCredentials']) {
                 $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
-                $this->varyHeader($response, 'Access-Control-Request-Method');
+                // Vary is always done
             } else {
                 $allowMethods = '*';
             }
@@ -213,7 +215,7 @@ class CorsService
         }
     }
 
-    private function varyHeader(Response $response, $header)
+    public function varyHeader(Response $response, $header)
     {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
