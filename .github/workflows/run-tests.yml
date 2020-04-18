@@ -25,6 +25,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
+        extensions: mbstring
 
     - name: Install dependencies
       run: |
