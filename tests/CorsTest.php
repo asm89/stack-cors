@@ -105,7 +105,7 @@ class CorsTest extends TestCase
 
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('Foo, BAR', $response->headers->get('Access-Control-Allow-Headers'));
-        $this->assertStringContainsString('Access-Control-Request-Headers', $response->headers->get('Vary'));
+        $this->assertEquals('Access-Control-Request-Headers, Access-Control-Request-Method', $response->headers->get('Vary'));
     }
 
     /**
