@@ -36,3 +36,4 @@ jobs:
 
     - name: Check PSR-12 Codestyle
       run: vendor/bin/phpcs --standard=psr12 src/
+      if: matrix.os == 'ubuntu-latest'
