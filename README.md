@@ -6,7 +6,7 @@ http-{foundation,kernel} using application. It attempts to implement the
 
 [W3C Recommendation]: http://www.w3.org/TR/cors/
 
-Master [![Build Status](https://github.com/asm89/stack-cors/workflows/run-tests/badge.svg)](https://github.com/asm89/stack-cors/actions)
+Build status: ![.github/workflows/run-tests.yml](https://github.com/asm89/stack-cors/workflows/.github/workflows/run-tests.yml/badge.svg)
 
 ## Installation
 
