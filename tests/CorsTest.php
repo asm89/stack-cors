@@ -9,14 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Asm89\Stack;
+namespace Asm89\Stack\Tests;
 
-use PHPUnit_Framework_TestCase;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Asm89\Stack\Cors;
+use Asm89\Stack\CorsService;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CorsTest extends PHPUnit_Framework_TestCase
+class CorsTest extends TestCase
 {
     /**
      * @test
@@ -535,24 +536,5 @@ class CorsTest extends PHPUnit_Framework_TestCase
         );
 
         return new Cors(new MockApp($responseHeaders), $passedOptions);
-    }
-}
-
-class MockApp implements HttpKernelInterface
-{
-    private $responseHeaders;
-
-    public function __construct(array $responseHeaders)
-    {
-        $this->responseHeaders = $responseHeaders;
-    }
-
-    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
-    {
-        $response = new Response();
-
-        $response->headers->add($this->responseHeaders);
-
-        return $response;
     }
 }
