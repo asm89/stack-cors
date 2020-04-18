@@ -55,6 +55,14 @@ class CorsService
         return $options;
     }
 
+    /**
+     * @deprecated use isOriginAllowed
+     */
+    public function isActualRequestAllowed(Request $request)
+    {
+        return $this->isOriginAllowed($request);
+    }
+
     public function isCorsRequest(Request $request)
     {
         return $request->headers->has('Origin') && !$this->isSameHost($request);
@@ -91,18 +99,14 @@ class CorsService
         return $response;
     }
 
-    /**
-     * @deprecated use isOriginAllowed
-     */
-    public function isActualRequestAllowed(Request $request)
-    {
-        return $this->isOriginAllowed($request);
-    }
-
     public function isOriginAllowed(Request $request)
     {
         if ($this->options['allowedOrigins'] === true) {
             return true;
+        }
+
+        if (!$request->headers->has('Origin')) {
+            return false;
         }
 
         $origin = $request->headers->get('Origin');

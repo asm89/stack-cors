@@ -45,6 +45,10 @@ class Cors implements HttpKernelInterface
 
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
+        if (!$this->cors->isCorsRequest($request)) {
+            return $this->app->handle($request, $type, $catch);
+        }
+
         if ($this->cors->isPreflightRequest($request)) {
             return $this->cors->handlePreflightRequest($request);
         }
