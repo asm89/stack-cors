@@ -46,7 +46,7 @@ use Asm89\Stack\CorsService;
 $cors = new CorsService(array(
     'allowedHeaders'         => array('x-allowed-header', 'x-other-allowed-header'),
     'allowedMethods'         => array('DELETE', 'GET', 'POST', 'PUT'),
-    'allowedOrigins'         => array('localhost'),
+    'allowedOrigins'         => array('http://localhost'),
     'allowedOriginsPatterns' => array('/localhost:\d/'),
     'exposedHeaders'         => false,
     'maxAge'                 => false,

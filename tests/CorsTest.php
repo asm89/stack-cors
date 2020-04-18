@@ -25,11 +25,10 @@ class CorsTest extends TestCase
     public function it_does_modify_on_a_request_without_origin()
     {
         $app                = $this->createStackedApp();
-        $unmodifiedResponse = new Response();
 
         $response = $app->handle(new Request());
 
-        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -59,7 +58,7 @@ class CorsTest extends TestCase
         $response = $app->handle($request);
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
-        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -238,13 +237,13 @@ class CorsTest extends TestCase
     public function it_adds_a_vary_header_when_multiple_origins()
     {
         $app = $this->createStackedApp(array(
-           'allowedOrigins' => array('localhost', 'http://example.com')
+           'allowedOrigins' => array('http://localhost', 'http://example.com')
         ));
         $request  = $this->createValidActualRequest();
 
         $response = $app->handle($request);
 
-        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertTrue($response->headers->has('Vary'));
     }
 
@@ -278,12 +277,12 @@ class CorsTest extends TestCase
     {
         $app      = $this->createStackedApp();
         $request  = new Request();
-        $request->headers->set('Origin', 'localhost');
+        $request->headers->set('Origin', 'http://localhost');
 
         $response = $app->handle($request);
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
-        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -300,7 +299,7 @@ class CorsTest extends TestCase
         $response = $app->handle($request);
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
-        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertTrue($response->headers->has('Vary'));
         $this->assertEquals('Origin', $response->headers->get('Vary'));
     }
@@ -316,7 +315,7 @@ class CorsTest extends TestCase
         $response = $app->handle($request);
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Origin'));
-        $this->assertEquals('localhost', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('http://localhost', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -325,7 +324,7 @@ class CorsTest extends TestCase
     public function it_does_not_allow_request_with_origin_not_allowed()
     {
         $passedOptions = array(
-          'allowedOrigins' => array('notlocalhost'),
+          'allowedOrigins' => array('http://notlocalhost'),
         );
 
         $service  = new CorsService($passedOptions);
@@ -504,7 +503,7 @@ class CorsTest extends TestCase
     private function createValidActualRequest()
     {
         $request  = new Request();
-        $request->headers->set('Origin', 'localhost');
+        $request->headers->set('Origin', 'http://localhost');
 
         return $request;
     }
@@ -512,7 +511,7 @@ class CorsTest extends TestCase
     private function createValidPreflightRequest()
     {
         $request  = new Request();
-        $request->headers->set('Origin', 'localhost');
+        $request->headers->set('Origin', 'http://localhost');
         $request->headers->set('Access-Control-Request-Method', 'get');
         $request->setMethod('OPTIONS');
 
@@ -524,7 +523,7 @@ class CorsTest extends TestCase
         $passedOptions = array_merge(array(
                 'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
                 'allowedMethods'      => array('delete', 'get', 'post', 'put'),
-                'allowedOrigins'      => array('localhost'),
+                'allowedOrigins'      => array('http://localhost'),
                 'exposedHeaders'      => false,
                 'maxAge'              => false,
                 'supportsCredentials' => false,
