@@ -181,7 +181,7 @@ class CorsService
     {
         if ($this->options['allowedHeaders'] === true) {
             if ($this->options['supportsCredentials']) {
-                $allowHeaders = strtoupper($request->headers->get('Access-Control-Request-Headers'));
+                $allowHeaders = $request->headers->get('Access-Control-Request-Headers');
                 $this->varyHeader($response, 'Access-Control-Request-Headers');
             } else {
                 $allowHeaders = '*';
