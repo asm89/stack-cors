@@ -22,38 +22,6 @@ class CorsTest extends TestCase
     /**
      * @test
      */
-    public function it_does_not_modify_on_a_request_without_origin()
-    {
-        $app                = $this->createStackedApp();
-        $unmodifiedResponse = new Response();
-
-        $response = $app->handle(new Request());
-
-        $this->assertEquals($unmodifiedResponse->headers, $response->headers);
-    }
-
-
-    /**
-     * @test
-     */
-    public function it_does_not_modify_on_a_request_with_same_origin()
-    {
-        $app = $this->createStackedApp(array('allowedOrigins' => array('*')));
-        $unmodifiedResponse = new Response();
-
-        $request  = new Request();
-        $request->headers->set('Host', 'foo.com');
-        $request->headers->set('Origin', 'http://foo.com');
-        $response = $app->handle($request);
-        $unmodifiedResponse->headers->date = '';
-        $response->headers->date = '';
-
-        $this->assertEquals($unmodifiedResponse->headers, $response->headers);
-    }
-
-    /**
-     * @test
-     */
     public function it_returns_allow_origin_header_on_valid_actual_request()
     {
         $app      = $this->createStackedApp();
