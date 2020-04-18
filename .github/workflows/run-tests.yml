@@ -15,7 +15,7 @@ jobs:
         dependency-version: [prefer-lowest, prefer-stable]
         os: [ubuntu-latest, windows-latest]
 
-    name: P${{ matrix.php }} - ${{ matrix.os }}
+    name: PHP${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 
     steps:
     - name: Checkout code
