@@ -84,14 +84,16 @@ class CorsService
     public function addPreflightRequestHeaders(Response $response, Request $request)
     {
         $this->configureAllowedOrigin($response, $request);
+        
+        if ($response->headers->has('Access-Control-Allow-Origin')) {
+            $this->configureAllowCredentials($response, $request);
 
-        $this->configureAllowCredentials($response, $request);
+            $this->configureAllowedMethods($response, $request);
 
-        $this->configureAllowedMethods($response, $request);
+            $this->configureAllowedHeaders($response, $request);
 
-        $this->configureAllowedHeaders($response, $request);
-
-        $this->configureMaxAge($response, $request);
+            $this->configureMaxAge($response, $request);
+        }
 
         return $response;
     }
@@ -125,9 +127,11 @@ class CorsService
     {
         $this->configureAllowedOrigin($response, $request);
 
-        $this->configureAllowCredentials($response, $request);
+        if ($response->headers->has('Access-Control-Allow-Origin')) {
+            $this->configureAllowCredentials($response, $request);
 
-        $this->configureExposedHeaders($response, $request);
+            $this->configureExposedHeaders($response, $request);
+        }
 
         return $response;
     }
