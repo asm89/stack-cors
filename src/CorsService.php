@@ -23,7 +23,7 @@ class CorsService
         $this->options = $this->normalizeOptions($options);
     }
 
-    private function normalizeOptions(array $options = array()) : array
+    private function normalizeOptions(array $options = array()): array
     {
         $options += array(
             'allowedOrigins' => array(),
@@ -57,22 +57,22 @@ class CorsService
     /**
      * @deprecated use isOriginAllowed
      */
-    public function isActualRequestAllowed(Request $request) : bool
+    public function isActualRequestAllowed(Request $request): bool
     {
         return $this->isOriginAllowed($request);
     }
 
-    public function isCorsRequest(Request $request) : bool
+    public function isCorsRequest(Request $request): bool
     {
         return $request->headers->has('Origin') && !$this->isSameHost($request);
     }
 
-    public function isPreflightRequest(Request $request) : bool
+    public function isPreflightRequest(Request $request): bool
     {
         return $request->getMethod() === 'OPTIONS' && $request->headers->has('Access-Control-Request-Method');
     }
 
-    public function handlePreflightRequest(Request $request) : Response
+    public function handlePreflightRequest(Request $request): Response
     {
         $response = new Response();
 
@@ -81,7 +81,7 @@ class CorsService
         return $this->addPreflightRequestHeaders($response, $request);
     }
 
-    public function addPreflightRequestHeaders(Response $response, Request $request) : Response
+    public function addPreflightRequestHeaders(Response $response, Request $request): Response
     {
         $this->configureAllowedOrigin($response, $request);
         
@@ -98,7 +98,7 @@ class CorsService
         return $response;
     }
 
-    public function isOriginAllowed(Request $request) : bool
+    public function isOriginAllowed(Request $request): bool
     {
         if ($this->options['allowedOrigins'] === true) {
             return true;
@@ -123,7 +123,7 @@ class CorsService
         return false;
     }
 
-    public function addActualRequestHeaders(Response $response, Request $request) : Response
+    public function addActualRequestHeaders(Response $response, Request $request): Response
     {
         $this->configureAllowedOrigin($response, $request);
 
@@ -154,7 +154,7 @@ class CorsService
         }
     }
 
-    private function isSingleOriginAllowed() : bool
+    private function isSingleOriginAllowed(): bool
     {
         if ($this->options['allowedOrigins'] === true || !empty($this->options['allowedOriginsPatterns'])) {
             return false;
@@ -215,7 +215,7 @@ class CorsService
         }
     }
 
-    public function varyHeader(Response $response, $header) : Response
+    public function varyHeader(Response $response, $header): Response
     {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
@@ -226,7 +226,7 @@ class CorsService
         return $response;
     }
 
-    private function isSameHost(Request $request) : bool
+    private function isSameHost(Request $request): bool
     {
         return $request->headers->get('Origin') === $request->getSchemeAndHttpHost();
     }
