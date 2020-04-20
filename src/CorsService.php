@@ -222,6 +222,8 @@ class CorsService
         } elseif (!in_array($header, explode(', ', $response->headers->get('Vary')))) {
             $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
         }
+
+        return $response;
     }
 
     private function isSameHost(Request $request)
