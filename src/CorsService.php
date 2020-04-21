@@ -11,55 +11,54 @@
 
 namespace Asm89\Stack;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use MakiseCo\Http\Request;
+use MakiseCo\Http\Response;
+
+use function array_map;
+use function array_values;
+use function explode;
+use function implode;
+use function in_array;
+use function preg_match;
 
 class CorsService
 {
-    private $options;
+    private array $options;
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         $this->options = $this->normalizeOptions($options);
     }
 
-    private function normalizeOptions(array $options = array()): array
+    private function normalizeOptions(array $options = []): array
     {
-        $options += array(
-            'allowedOrigins' => array(),
-            'allowedOriginsPatterns' => array(),
+        $options += [
+            'allowedOrigins' => [],
+            'allowedOriginsPatterns' => [],
             'supportsCredentials' => false,
-            'allowedHeaders' => array(),
-            'exposedHeaders' => array(),
-            'allowedMethods' => array(),
+            'allowedHeaders' => [],
+            'exposedHeaders' => [],
+            'allowedMethods' => [],
             'maxAge' => 0,
-        );
+        ];
 
         // normalize array('*') to true
-        if (in_array('*', $options['allowedOrigins'])) {
+        if (in_array('*', $options['allowedOrigins'], true)) {
             $options['allowedOrigins'] = true;
         }
-        if (in_array('*', $options['allowedHeaders'])) {
+        if (in_array('*', $options['allowedHeaders'], true)) {
             $options['allowedHeaders'] = true;
         } else {
             $options['allowedHeaders'] = array_map('strtolower', $options['allowedHeaders']);
         }
 
-        if (in_array('*', $options['allowedMethods'])) {
+        if (in_array('*', $options['allowedMethods'], true)) {
             $options['allowedMethods'] = true;
         } else {
             $options['allowedMethods'] = array_map('strtoupper', $options['allowedMethods']);
         }
 
         return $options;
-    }
-
-    /**
-     * @deprecated use isOriginAllowed
-     */
-    public function isActualRequestAllowed(Request $request): bool
-    {
-        return $this->isOriginAllowed($request);
     }
 
     public function isCorsRequest(Request $request): bool
@@ -84,7 +83,7 @@ class CorsService
     public function addPreflightRequestHeaders(Response $response, Request $request): Response
     {
         $this->configureAllowedOrigin($response, $request);
-        
+
         if ($response->headers->has('Access-Control-Allow-Origin')) {
             $this->configureAllowCredentials($response, $request);
 
@@ -110,7 +109,7 @@ class CorsService
 
         $origin = $request->headers->get('Origin');
 
-        if (in_array($origin, $this->options['allowedOrigins'])) {
+        if (in_array($origin, $this->options['allowedOrigins'], true)) {
             return true;
         }
 
@@ -136,7 +135,7 @@ class CorsService
         return $response;
     }
 
-    private function configureAllowedOrigin(Response $response, Request $request)
+    private function configureAllowedOrigin(Response $response, Request $request): void
     {
         if ($this->options['allowedOrigins'] === true && !$this->options['supportsCredentials']) {
             // Safe+cacheable, allow everything
@@ -163,7 +162,7 @@ class CorsService
         return count($this->options['allowedOrigins']) === 1;
     }
 
-    private function configureAllowedMethods(Response $response, Request $request)
+    private function configureAllowedMethods(Response $response, Request $request): void
     {
         if ($this->options['allowedMethods'] === true) {
             if ($this->options['supportsCredentials']) {
@@ -179,7 +178,7 @@ class CorsService
         $response->headers->set('Access-Control-Allow-Methods', $allowMethods);
     }
 
-    private function configureAllowedHeaders(Response $response, Request $request)
+    private function configureAllowedHeaders(Response $response, Request $request): void
     {
         if ($this->options['allowedHeaders'] === true) {
             if ($this->options['supportsCredentials']) {
@@ -194,24 +193,24 @@ class CorsService
         $response->headers->set('Access-Control-Allow-Headers', $allowHeaders);
     }
 
-    private function configureAllowCredentials(Response $response, Request $request)
+    private function configureAllowCredentials(Response $response, Request $request): void
     {
         if ($this->options['supportsCredentials']) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
     }
 
-    private function configureExposedHeaders(Response $response, Request $request)
+    private function configureExposedHeaders(Response $response, Request $request): void
     {
         if ($this->options['exposedHeaders']) {
             $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->options['exposedHeaders']));
         }
     }
 
-    private function configureMaxAge(Response $response, Request $request)
+    private function configureMaxAge(Response $response, Request $request): void
     {
         if ($this->options['maxAge'] !== null) {
-            $response->headers->set('Access-Control-Max-Age', (int) $this->options['maxAge']);
+            $response->headers->set('Access-Control-Max-Age', (int)$this->options['maxAge']);
         }
     }
 
@@ -219,7 +218,7 @@ class CorsService
     {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
-        } elseif (!in_array($header, explode(', ', $response->headers->get('Vary')))) {
+        } elseif (!in_array($header, explode(', ', $response->headers->get('Vary')), true)) {
             $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
         }
 
