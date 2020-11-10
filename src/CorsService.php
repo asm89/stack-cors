@@ -64,7 +64,7 @@ class CorsService
 
     public function isCorsRequest(Request $request): bool
     {
-        return $request->headers->has('Origin') && !$this->isSameHost($request);
+        return $request->headers->has('Origin');
     }
 
     public function isPreflightRequest(Request $request): bool
