@@ -518,6 +518,21 @@ class CorsTest extends TestCase
         $this->assertEquals(204, $response->getStatusCode());
     }
 
+    /**
+     * @test
+     */
+    public function it_doesnt_set_access_control_allow_origin_without_origin()
+    {
+        $app     = $this->createStackedApp([
+            'allowedOrigins'      => ['*'],
+            'supportsCredentials' => true,
+        ]);
+
+        $response = $app->handle(new Request);
+
+        $this->assertFalse($response->headers->has('Access-Control-Allow-Origin'));
+    }
+
     private function createValidActualRequest()
     {
         $request  = new Request();

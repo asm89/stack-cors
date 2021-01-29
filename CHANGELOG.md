@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Bug with `Access-Control-Allow-Origin` header is `null` then `allowedOrigins` is `['*']`, `supportsCredentials` is `true` and `Origin` header doesn't  set (#85)
+
 ## [2.0.0] - 2020-05-11
 
 ### Added
