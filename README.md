@@ -22,10 +22,10 @@ This package can be used as a library or as [stack middleware].
 
 | Option                 | Description                                                | Default value |
 |------------------------|------------------------------------------------------------|---------------|
-| allowedMethods         | Matches the request method.                                | `Array`       |
-| allowedOrigins         | Matches the request origin.                                | `Array`       |
-| allowedOriginsPatterns | Matches the request origin with `preg_match`.              | `Array`       |
-| allowedHeaders         | Sets the Access-Control-Allow-Headers response header.     | `Array`       |
+| allowedMethods         | Matches the request method.                                | `[]`          |
+| allowedOrigins         | Matches the request origin.                                | `[]`          |
+| allowedOriginsPatterns | Matches the request origin with `preg_match`.              | `[]`          |
+| allowedHeaders         | Sets the Access-Control-Allow-Headers response header.     | `[]`          |
 | exposedHeaders         | Sets the Access-Control-Expose-Headers response header.    | `false`       |
 | maxAge                 | Sets the Access-Control-Max-Age response header.           | `false`       |
 | supportsCredentials    | Sets the Access-Control-Allow-Credentials header.          | `false`       |
