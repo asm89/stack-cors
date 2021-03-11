@@ -18,12 +18,12 @@ class CorsService
 {
     private $options;
 
-    public function __construct(array $options)
+    public function __construct(array $options = [])
     {
         $this->options = $this->normalizeOptions($options);
     }
 
-    private function normalizeOptions(array $options): array
+    private function normalizeOptions(array $options = []): array
     {
         $options += [
             'allowedOrigins' => [],
@@ -35,7 +35,7 @@ class CorsService
             'maxAge' => 0,
         ];
 
-        // normalize array('*') to true
+        // normalize ['*'] to true
         if (in_array('*', $options['allowedOrigins'])) {
             $options['allowedOrigins'] = true;
         }
