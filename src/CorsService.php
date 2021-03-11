@@ -18,22 +18,22 @@ class CorsService
 {
     private $options;
 
-    public function __construct(array $options = array())
+    public function __construct(array $options)
     {
         $this->options = $this->normalizeOptions($options);
     }
 
-    private function normalizeOptions(array $options = array()): array
+    private function normalizeOptions(array $options): array
     {
-        $options += array(
-            'allowedOrigins' => array(),
-            'allowedOriginsPatterns' => array(),
+        $options += [
+            'allowedOrigins' => [],
+            'allowedOriginsPatterns' => [],
             'supportsCredentials' => false,
-            'allowedHeaders' => array(),
-            'exposedHeaders' => array(),
-            'allowedMethods' => array(),
+            'allowedHeaders' => [],
+            'exposedHeaders' => [],
+            'allowedMethods' => [],
             'maxAge' => 0,
-        );
+        ];
 
         // normalize array('*') to true
         if (in_array('*', $options['allowedOrigins'])) {
