@@ -27,17 +27,17 @@ class Cors implements HttpKernelInterface
      */
     private $cors;
 
-    private $defaultOptions = array(
-        'allowedHeaders'         => array(),
-        'allowedMethods'         => array(),
-        'allowedOrigins'         => array(),
-        'allowedOriginsPatterns' => array(),
-        'exposedHeaders'         => array(),
+    private $defaultOptions = [
+        'allowedHeaders'         => [],
+        'allowedMethods'         => [],
+        'allowedOrigins'         => [],
+        'allowedOriginsPatterns' => [],
+        'exposedHeaders'         => [],
         'maxAge'                 => 0,
         'supportsCredentials'    => false,
-    );
+    ];
 
-    public function __construct(HttpKernelInterface $app, array $options = array())
+    public function __construct(HttpKernelInterface $app, array $options = [])
     {
         $this->app  = $app;
         $this->cors = new CorsService(array_merge($this->defaultOptions, $options));
