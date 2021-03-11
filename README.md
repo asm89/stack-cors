@@ -70,9 +70,9 @@ use Asm89\Stack\Cors;
 $app = new Cors($app, [
     // you can use ['*'] to allow any headers
     'allowedHeaders'      => ['x-allowed-header', 'x-other-allowed-header'],
-    // you can use array('*') to allow any methods
+    // you can use ['*'] to allow any methods
     'allowedMethods'      => ['DELETE', 'GET', 'POST', 'PUT'],
-    // you can use array('*') to allow requests from any origin
+    // you can use ['*'] to allow requests from any origin
     'allowedOrigins'      => ['localhost'],
     // you can enter regexes that are matched to the origin request header
     'allowedOriginsPatterns' => ['/localhost:\d/'],
