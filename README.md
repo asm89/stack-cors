@@ -22,10 +22,10 @@ This package can be used as a library or as [stack middleware].
 
 | Option                 | Description                                                | Default value |
 |------------------------|------------------------------------------------------------|---------------|
-| allowedMethods         | Matches the request method.                                | `array()`     |
-| allowedOrigins         | Matches the request origin.                                | `array()`     |
-| allowedOriginsPatterns | Matches the request origin with `preg_match`.              | `array()`  |
-| allowedHeaders         | Sets the Access-Control-Allow-Headers response header.     | `array()`     |
+| allowedMethods         | Matches the request method.                                | `[]`          |
+| allowedOrigins         | Matches the request origin.                                | `[]`          |
+| allowedOriginsPatterns | Matches the request origin with `preg_match`.              | `[]`          |
+| allowedHeaders         | Sets the Access-Control-Allow-Headers response header.     | `[]`          |
 | exposedHeaders         | Sets the Access-Control-Expose-Headers response header.    | `false`       |
 | maxAge                 | Sets the Access-Control-Max-Age response header.           | `false`       |
 | supportsCredentials    | Sets the Access-Control-Allow-Credentials header.          | `false`       |
@@ -34,7 +34,7 @@ The _allowedMethods_ and _allowedHeaders_ options are case-insensitive.
 
 You don't need to provide both _allowedOrigins_ and _allowedOriginsPatterns_. If one of the strings passed matches, it is considered a valid origin.
 
-If `array('*')` is provided to _allowedMethods_, _allowedOrigins_ or _allowedHeaders_ all methods / origins / headers are allowed.
+If `['*']` is provided to _allowedMethods_, _allowedOrigins_ or _allowedHeaders_ all methods / origins / headers are allowed.
 
 ### Example: using the library
 
@@ -43,15 +43,15 @@ If `array('*')` is provided to _allowedMethods_, _allowedOrigins_ or _allowedHea
 
 use Asm89\Stack\CorsService;
 
-$cors = new CorsService(array(
-    'allowedHeaders'         => array('x-allowed-header', 'x-other-allowed-header'),
-    'allowedMethods'         => array('DELETE', 'GET', 'POST', 'PUT'),
-    'allowedOrigins'         => array('http://localhost'),
-    'allowedOriginsPatterns' => array('/localhost:\d/'),
+$cors = new CorsService([
+    'allowedHeaders'         => ['x-allowed-header', 'x-other-allowed-header'],
+    'allowedMethods'         => ['DELETE', 'GET', 'POST', 'PUT'],
+    'allowedOrigins'         => ['http://localhost'],
+    'allowedOriginsPatterns' => ['/localhost:\d/'],
     'exposedHeaders'         => false,
     'maxAge'                 => false,
     'supportsCredentials'    => false,
-));
+]);
 
 $cors->addActualRequestHeaders(Response $response, $origin);
 $cors->handlePreflightRequest(Request $request);
@@ -67,17 +67,17 @@ $cors->isPreflightRequest(Request $request);
 
 use Asm89\Stack\Cors;
 
-$app = new Cors($app, array(
-    // you can use array('*') to allow any headers
-    'allowedHeaders'      => array('x-allowed-header', 'x-other-allowed-header'),
+$app = new Cors($app, [
+    // you can use ['*'] to allow any headers
+    'allowedHeaders'      => ['x-allowed-header', 'x-other-allowed-header'],
     // you can use array('*') to allow any methods
-    'allowedMethods'      => array('DELETE', 'GET', 'POST', 'PUT'),
+    'allowedMethods'      => ['DELETE', 'GET', 'POST', 'PUT'],
     // you can use array('*') to allow requests from any origin
-    'allowedOrigins'      => array('localhost'),
+    'allowedOrigins'      => ['localhost'],
     // you can enter regexes that are matched to the origin request header
-    'allowedOriginsPatterns' => array('/localhost:\d/'),
+    'allowedOriginsPatterns' => ['/localhost:\d/'],
     'exposedHeaders'      => false,
     'maxAge'              => false,
     'supportsCredentials' => false,
-));
+]);
 ```
