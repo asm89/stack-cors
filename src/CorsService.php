@@ -145,8 +145,8 @@ class CorsService
             // Single origins can be safely set
             $response->headers->set('Access-Control-Allow-Origin', array_values($this->options['allowedOrigins'])[0]);
         } else {
-            // For dynamic headers, check the origin first
-            if ($request->headers->has('Origin') && $this->isOriginAllowed($request)) {
+            // For dynamic headers, set the requested Origin header when set and allowed
+            if ($this->isCorsRequest($request) && $this->isOriginAllowed($request)) {
                 $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
             }
 
