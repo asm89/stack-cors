@@ -13,7 +13,6 @@ namespace Asm89\Stack;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class Cors implements HttpKernelInterface
 {
