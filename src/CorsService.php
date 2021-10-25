@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CorsService
 {
-    private $options;
+    protected $options;
 
     public function __construct(array $options)
     {
