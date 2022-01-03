@@ -37,7 +37,7 @@ class Cors implements HttpKernelInterface
         'supportsCredentials'    => false,
     ];
 
-    public function __construct(HttpKernelInterface $app, array $options = null)
+    public function __construct(HttpKernelInterface $app, array $options = [])
     {
         $this->app  = $app;
         $this->cors = new CorsService(array_merge($this->defaultOptions, $options));
