@@ -23,7 +23,7 @@ class CorsService
         $this->options = $this->normalizeOptions($options);
     }
 
-    private function normalizeOptions(array $options): array
+    private function normalizeOptions(array $options = []): array
     {
         $options += [
             'allowedOrigins' => [],
