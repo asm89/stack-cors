@@ -16,7 +16,7 @@ class MockApp implements HttpKernelInterface
         $this->responseHeaders = $responseHeaders;
     }
 
-    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+    public function handle(Request $request, int $type = HttpKernelInterface::MAIN_REQUEST, bool $catch = true): Response
     {
         $response = new Response();
 
