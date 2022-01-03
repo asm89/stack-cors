@@ -34,5 +34,5 @@ jobs:
       run: vendor/bin/phpunit
 
     - name: Check PSR-12 Codestyle
-      run: vendor/bin/phpcs --standard=psr12 src/
+      run: vendor/bin/phpcs --standard=psr12 --exclude=Generic.Files.LineLength src/
       if: matrix.os == 'ubuntu-latest'
