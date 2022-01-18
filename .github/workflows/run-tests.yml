@@ -26,7 +26,7 @@ jobs:
           - symfony: 6.x
             php: 7.4
 
-    name: PHP${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
+    name: PHP${{ matrix.php }} Symfony${{ matrix.symfony }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 
     steps:
     - name: Checkout code
