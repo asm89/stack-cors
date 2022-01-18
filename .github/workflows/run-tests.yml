@@ -10,7 +10,8 @@ jobs:
 
     strategy:
       matrix:
-        php: [8.0, 8.1]
+        php: [7.1, 7.2, 7.3, 7.4, 8.0, 8.1]
+        symfony: [4.x, 5.x, 6.x]
         dependency-version: [prefer-lowest, prefer-stable]
         os: [ubuntu-latest]
 
@@ -28,7 +29,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+        composer require "symfony/http-foundation:${{ matrix.symfony }}" "symfony/http-kernel:${{ matrix.symfony }}" --no-interaction --no-update
+        composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest --with-all-dependencies
 
     - name: Execute Unit Tests
       run: vendor/bin/phpunit
