@@ -15,15 +15,15 @@ jobs:
         dependency-version: [prefer-lowest, prefer-stable]
         os: [ubuntu-latest]
         exclude:
-          - symfony: ^5
+          - symfony: 5.x
             php: 7.1
-          - symfony: ^6
+          - symfony: 6.x
             php: 7.1
-          - symfony: ^6
+          - symfony: 6.x
             php: 7.2
-          - symfony: ^6
+          - symfony: 6.x
             php: 7.3
-          - symfony: ^6
+          - symfony: 6.x
             php: 7.4
 
     name: PHP${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
