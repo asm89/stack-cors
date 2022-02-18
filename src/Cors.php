@@ -11,6 +11,7 @@
 
 namespace Asm89\Stack;
 
+use Fruitcake\Cors\CorsService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,7 @@ class Cors implements HttpKernelInterface
     private $app;
 
     /**
-     * @var \Asm89\Stack\CorsService
+     * @var \Fruitcake\Cors\CorsService
      */
     private $cors;
 
