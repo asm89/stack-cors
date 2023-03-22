@@ -12,7 +12,7 @@
 namespace Asm89\Stack\Tests;
 
 use Asm89\Stack\Cors;
-use Asm89\Stack\CorsService;
+use Fruitcake\Cors\CorsService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
