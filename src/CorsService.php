@@ -195,7 +195,7 @@ class CorsService
 
     private function configureExposedHeaders(Response $response, Request $request)
     {
-        if ($this->options['exposedHeaders']) {
+        if ($this->options['exposedHeaders'] && is_array($this->options['exposedHeaders'])) {
             $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->options['exposedHeaders']));
         }
     }
