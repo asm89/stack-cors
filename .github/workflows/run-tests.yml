@@ -15,16 +15,16 @@ jobs:
         dependency-version: [prefer-lowest, prefer-stable]
         os: [ubuntu-latest]
         include:
-          - symfony: 5.4.x
+          - symfony: ^5.3
             php: 7.2
             dependency-version: prefer-stable
-          - symfony: 5.4.x
+          - symfony: ^5.3
             php: 7.3
             dependency-version: prefer-stable
-          - symfony: 5.4.x
+          - symfony: ^5.3
             php: 7.4
             dependency-version: prefer-stable
-          - symfony: 5.4.x
+          - symfony: ^5.3
             php: 8.1
             dependency-version: prefer-stable
 
