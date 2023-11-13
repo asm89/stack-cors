@@ -39,7 +39,7 @@
         "branch-alias": {
             "dev-master": "2.1-dev"
         }
-    }
+    },
     "minimum-stability": "beta",
     "prefer-stable": true
 }
