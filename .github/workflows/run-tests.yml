@@ -16,9 +16,6 @@ jobs:
         os: [ubuntu-latest]
         include:
           - symfony: ^5.3
-            php: 7.2
-            dependency-version: prefer-stable
-          - symfony: ^5.3
             php: 7.3
             dependency-version: prefer-stable
           - symfony: ^5.3
