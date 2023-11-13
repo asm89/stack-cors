@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "php": "^7.2|^8.0",
+        "php": "^7.3|^8.0",
         "symfony/http-foundation": "^5.3|^6|^7",
         "symfony/http-kernel": "^5.3|^6|^7"
     },
