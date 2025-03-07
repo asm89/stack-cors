@@ -211,8 +211,20 @@ class CorsService
     {
         if (!$response->headers->has('Vary')) {
             $response->headers->set('Vary', $header);
-        } elseif (!in_array($header, explode(', ', $response->headers->get('Vary')))) {
-            $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
+        } else {
+            $varyHeaders = $response->headers->all('Vary');
+            $existing = [];
+            foreach ($varyHeaders as $value) {
+                $existing = array_merge($existing, explode(', ', $value));
+            }
+
+            if (!in_array($header, $existing)) {
+                if (count($varyHeaders) < 2) {
+                    $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
+                } else {
+                    $response->headers->set('Vary', $header, false);
+                }
+            }
         }
 
         return $response;
