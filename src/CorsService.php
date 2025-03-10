@@ -209,21 +209,12 @@ class CorsService
 
     public function varyHeader(Response $response, $header): Response
     {
-        if (!$response->headers->has('Vary')) {
-            $response->headers->set('Vary', $header);
-        } else {
-            $varyHeaders = $response->headers->all('Vary');
-            $existing = [];
-            foreach ($varyHeaders as $value) {
-                $existing = array_merge($existing, explode(', ', $value));
-            }
-
-            if (!in_array($header, $existing)) {
-                if (count($varyHeaders) < 2) {
-                    $response->headers->set('Vary', $response->headers->get('Vary') . ', ' . $header);
-                } else {
-                    $response->headers->set('Vary', $header, false);
-                }
+        $vary = $response->getVary();
+        if (!in_array($header, $vary)) {
+            if (count($response->headers->all('Vary')) == 1) {
+                $response->setVary($response->headers->get('Vary') . ', ' . $header, true);
+            } else {
+                $response->setVary($header, false);
             }
         }
 
