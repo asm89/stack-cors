@@ -271,6 +271,76 @@ class CorsTest extends TestCase
         $this->assertEquals('Content-Type, Origin', $response->headers->get('Vary'));
     }
 
+
+    /**
+     * @test
+     * @see http://www.w3.org/TR/cors/index.html#resource-implementation
+     */
+    public function it_doesnt_append_an_existing_vary_header_when_exists()
+    {
+        $app      = $this->createStackedApp(
+            array(
+                'allowedOrigins' => ['*'],
+                'supportsCredentials' => true,
+            ),
+            array(
+                'Vary' => 'Content-Type, Origin'
+            )
+        );
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Vary'));
+        $this->assertEquals('Content-Type, Origin', $response->headers->get('Vary'));
+    }
+
+    /**
+     * @test
+     * @see http://www.w3.org/TR/cors/index.html#resource-implementation
+     */
+    public function it_appends_an_existing_vary_header_when_multiple()
+    {
+        $app      = $this->createStackedApp(
+            array(
+                'allowedOrigins' => ['*'],
+                'supportsCredentials' => true,
+            ),
+            array(
+                'Vary' => ['Content-Type', 'Referer'],
+            )
+        );
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Vary'));
+        $this->assertEquals(['Content-Type' ,'Referer', 'Origin'], $response->headers->all('Vary'));
+    }
+
+    /**
+     * @test
+     * @see http://www.w3.org/TR/cors/index.html#resource-implementation
+     */
+    public function it_doesnt_append_an_existing_vary_header_when_exists_multiple()
+    {
+        $app      = $this->createStackedApp(
+            array(
+                'allowedOrigins' => ['*'],
+                'supportsCredentials' => true,
+            ),
+            array(
+                'Vary' => ['Content-Type', 'Referer', 'Origin'],
+            )
+        );
+        $request  = $this->createValidActualRequest();
+
+        $response = $app->handle($request);
+
+        $this->assertTrue($response->headers->has('Vary'));
+        $this->assertEquals(['Content-Type' ,'Referer', 'Origin'], $response->headers->all('Vary'));
+    }
+
     /**
      * @test
      */
