@@ -37,6 +37,12 @@ jobs:
           - symfony: ^7
             php: 8.4
             dependency-version: prefer-stable
+          - symfony: ^8
+            php: 8.4
+            dependency-version: prefer-lowest
+          - symfony: ^8
+            php: 8.5
+            dependency-version: prefer-stable
 
     name: PHP${{ matrix.php }} Symfony${{ matrix.symfony }} - ${{ matrix.dependency-version }}
 
